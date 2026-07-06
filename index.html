@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hapo Group — Dashboard Live</title>
+<style>
+:root { color-scheme: light; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#7B3FE4;--g-dim:#4B2A8A;--g-lt:rgba(123,63,228,.1);--g-glow:rgba(123,63,228,.2);
+  --e:#D4550A;--e-dim:#7A3106;--e-lt:rgba(212,85,10,.1);--e-glow:rgba(212,85,10,.2);
+  --a:#00A389;--a-dim:#006B5A;--a-lt:rgba(0,163,137,.1);--a-glow:rgba(0,163,137,.2);
+  --green:#16A34A;--glt:rgba(22,163,74,.1);
+  --red:#DC2626;--rlt:rgba(220,38,38,.1);
+  --yellow:#D97706;--ylt:rgba(217,119,6,.1);
+  --bg:#F4F3FA;--bg2:#FFFFFF;--sur:#FFFFFF;--sur2:#F0EFF9;
+  --brd:rgba(0,0,0,.08);--brd2:rgba(0,0,0,.14);
+  --tx:#1A1A2E;--t2:#55557A;--t3:#9999BB;
+}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(244,243,250,.88);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(4px)}
+.loading-overlay.on{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--brd2);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.06em;text-transform:uppercase}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:11px 16px;border-radius:10px;font-size:12px;font-weight:700;z-index:10000;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.on{transform:translateY(0);opacity:1}
+.toast.ok{background:#F0FDF4;color:var(--green);border:1px solid rgba(22,163,74,.3);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.toast.err{background:#FEF2F2;color:var(--red);border:1px solid rgba(220,38,38,.3);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.toast.inf{background:var(--g-lt);color:var(--g);border:1px solid rgba(123,63,228,.3);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+
+/* HERO */
+.hero{background:var(--bg2);border-bottom:1px solid var(--brd);padding:22px 32px 20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(123,63,228,.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--g);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g)}
+.hero h1{font-size:20px;font-weight:800;color:var(--tx);line-height:1.15;letter-spacing:-.02em;margin-bottom:5px}
+.hero h1 span{color:var(--g)}
+.hero-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero-period{font-size:12px;color:var(--t2)}
+.live-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:5px;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:rgba(22,163,74,.1);color:var(--green);border:1px solid rgba(22,163,74,.2)}
+.live-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.last-upd{font-size:10px;color:var(--t3)}
+.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.hero-kpis{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end}
+.hk{text-align:right}
+.hk-n{font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--tx)}
+.hk-n.purple{color:var(--g)}.hk-n.orange{color:var(--e)}.hk-n.teal{color:var(--a)}
+.hk-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t2);margin-top:3px}
+.hero-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+/* ── DATE PICKER ──────────────────────────────────── */
+.dp-wrap{position:relative}
+
+.dp-trigger{display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--bg2);border:1px solid var(--brd2);border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;color:var(--tx);transition:all .15s;white-space:nowrap}
+.dp-trigger:hover{border-color:var(--g);color:var(--g)}
+.dp-trigger.open{border-color:var(--g);box-shadow:0 0 0 3px rgba(123,63,228,.12)}
+.dp-icon{font-size:13px;opacity:.6}
+.dp-caret{font-size:10px;color:var(--t3);margin-left:2px;transition:transform .15s}
+.dp-trigger.open .dp-caret{transform:rotate(180deg)}
+
+.dp-dropdown{position:fixed;background:var(--bg2);border:1px solid var(--brd2);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);z-index:9000;width:300px;overflow:hidden;display:none}
+.dp-dropdown.open{display:block}
+
+/* Shortcuts */
+.dp-shortcuts{padding:12px 14px 10px;border-bottom:1px solid var(--brd);display:flex;flex-wrap:wrap;gap:5px}
+.dp-sc{padding:4px 10px;border:1px solid var(--brd);border-radius:20px;font-size:11px;font-weight:600;color:var(--t2);background:none;cursor:pointer;transition:all .12s}
+.dp-sc:hover{border-color:var(--g);color:var(--g);background:var(--g-lt)}
+.dp-sc.active{border-color:var(--g);color:var(--g);background:var(--g-lt)}
+
+/* Calendar header */
+.cal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px}
+.cal-nav{width:28px;height:28px;border:none;background:none;border-radius:6px;cursor:pointer;font-size:16px;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all .12s}
+.cal-nav:hover{background:var(--bg);color:var(--tx)}
+.cal-month-lbl{font-size:13px;font-weight:700;color:var(--tx)}
+
+/* Weekday headers */
+.cal-wdays{display:grid;grid-template-columns:repeat(7,1fr);padding:0 10px;margin-bottom:4px}
+.cal-wd{font-size:10px;font-weight:700;color:var(--t3);text-align:center;padding:4px 0;text-transform:uppercase;letter-spacing:.04em}
+
+/* Day grid */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0 10px 10px;gap:2px}
+.cal-day{height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border-radius:7px;cursor:pointer;transition:all .1s;position:relative;color:var(--tx);user-select:none}
+.cal-day:hover:not(.disabled):not(.empty){background:var(--g-lt);color:var(--g)}
+.cal-day.empty{cursor:default}
+.cal-day.other-mo{color:var(--t3)}
+.cal-day.today{font-weight:800}
+.cal-day.today::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--g)}
+.cal-day.sel-start,.cal-day.sel-end{background:var(--g);color:#fff;border-radius:7px}
+.cal-day.sel-start::after,.cal-day.sel-end::after{display:none}
+.cal-day.in-range{background:var(--g-lt);color:var(--g);border-radius:0}
+.cal-day.range-start-edge{border-radius:7px 0 0 7px}
+.cal-day.range-end-edge{border-radius:0 7px 7px 0}
+.cal-day.sel-start.range-start-edge,.cal-day.sel-end.range-end-edge{border-radius:7px}
+.cal-day.disabled{color:var(--t3);opacity:.4;cursor:not-allowed}
+
+/* Status bar & footer */
+.dp-status{padding:8px 14px;font-size:11px;color:var(--t2);background:var(--bg);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);min-height:32px;display:flex;align-items:center;gap:6px}
+.dp-status .sel-dates{font-weight:700;color:var(--tx)}
+.dp-foot{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dp-cancel{padding:7px 14px;border:1px solid var(--brd2);border-radius:7px;background:none;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .12s}
+.dp-cancel:hover{background:var(--bg);color:var(--tx)}
+.dp-apply{padding:7px 18px;border:none;border-radius:7px;background:var(--g);color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .12s}
+.dp-apply:hover{opacity:.85}
+.dp-apply:disabled{opacity:.4;cursor:not-allowed}
+/* ── END DATE PICKER ──────────────────────────────── */
+
+.refresh-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;background:var(--g);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;cursor:pointer;transition:opacity .15s}
+.refresh-btn:hover{opacity:.85}
+.refresh-btn:disabled{opacity:.5;cursor:not-allowed}
+.refresh-btn .ri{display:inline-block}
+.refresh-btn.spinning .ri{animation:spin .8s linear infinite}
+
+/* NAV */
+.nav{background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;gap:2px;padding:0 32px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ntab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:12px 16px;border:none;background:none;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.ntab:hover{color:var(--t2)}.ntab.on{color:var(--g);border-bottom-color:var(--g)}
+
+/* PAGE */
+.page{max-width:1180px;margin:auto;padding:28px 32px 80px}
+.stitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.stitle::after{content:'';flex:1;height:1px;background:var(--brd)}
+.mb28{margin-bottom:28px}
+
+/* CO GRID */
+.co-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px}
+@media(max-width:800px){.co-grid{grid-template-columns:1fr}}
+.co-card{background:var(--sur);border:1px solid var(--brd);border-radius:14px;padding:20px 18px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.co-card:hover{border-color:var(--brd2);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.co-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.co-card.goalfy::before{background:linear-gradient(90deg,var(--g),#A67FEC)}
+.co-card.educ::before{background:linear-gradient(90deg,var(--e),#F4956A)}
+.co-card.assess::before{background:linear-gradient(90deg,var(--a),#6ADFD0)}
+.co-glow{position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;opacity:.5;pointer-events:none}
+.co-card.goalfy .co-glow{background:radial-gradient(circle,var(--g-glow),transparent 70%)}
+.co-card.educ .co-glow{background:radial-gradient(circle,var(--e-glow),transparent 70%)}
+.co-card.assess .co-glow{background:radial-gradient(circle,var(--a-glow),transparent 70%)}
+.co-name{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.co-card.goalfy .co-name{color:var(--g)}.co-card.educ .co-name{color:var(--e)}.co-card.assess .co-name{color:var(--a)}
+.co-invest{font-size:30px;font-weight:800;line-height:1;color:var(--tx);letter-spacing:-.02em}
+.co-invest sub{font-size:13px;font-weight:600;opacity:.5;vertical-align:baseline}
+.co-invest-l{font-size:11px;color:var(--t2);margin-top:3px;margin-bottom:14px}
+.co-bar{height:3px;background:var(--brd);border-radius:2px;margin-bottom:10px}
+.co-bar-fill{height:100%;border-radius:2px;transition:width .6s}
+.co-card.goalfy .co-bar-fill{background:linear-gradient(90deg,var(--g),#A67FEC)}
+.co-card.educ .co-bar-fill{background:linear-gradient(90deg,var(--e),#F4956A)}
+.co-card.assess .co-bar-fill{background:linear-gradient(90deg,var(--a),#6ADFD0)}
+.co-stats{display:flex;justify-content:space-between;font-size:11px;color:var(--t2)}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+.kpi{background:var(--sur);border:1px solid var(--brd);border-radius:10px;padding:14px 12px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.kpi.p::after{background:var(--g)}.kpi.o::after{background:var(--e)}.kpi.t::after{background:var(--a)}
+.kpi.g::after{background:var(--green)}.kpi.r::after{background:var(--red)}.kpi.n::after{background:var(--brd2)}
+.kpi-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:7px}
+.kpi-v{font-size:20px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--tx)}
+.kpi-v.purple{color:var(--g)}.kpi-v.orange{color:var(--e)}.kpi-v.teal{color:var(--a)}
+.kpi-v.green{color:var(--green)}.kpi-v.red{color:var(--red)}
+.kpi-s{font-size:10px;color:var(--t3);margin-top:3px}
+.badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;margin-top:5px}
+.bg{background:rgba(22,163,74,.1);color:var(--green)}.bo{background:rgba(212,85,10,.1);color:var(--e)}
+.br{background:rgba(220,38,38,.1);color:var(--red)}.bp{background:var(--g-lt);color:var(--g)}
+.bt{background:var(--a-lt);color:var(--a)}.bn{background:rgba(0,0,0,.05);color:var(--t2)}
+
+/* 2-col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.card{background:var(--sur);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.card-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:12px}
+
+/* CPL bars */
+.cpl-row{margin-bottom:9px}
+.cpl-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.cpl-name{color:var(--t2)}.cpl-val{font-weight:700;font-size:12px}
+.cpl-bg{height:4px;background:var(--brd);border-radius:3px;overflow:hidden}
+.cpl-bar{height:100%;border-radius:3px}
+
+/* INSIGHT */
+.insight{background:var(--g-lt);border:1px solid rgba(123,63,228,.15);border-radius:9px;padding:10px 13px;font-size:11px;color:var(--t2);line-height:1.6;margin-top:10px}
+.insight.o{background:var(--e-lt);border-color:rgba(212,85,10,.15)}
+.insight.r{background:var(--rlt);border-color:rgba(220,38,38,.15)}
+.insight strong{color:var(--tx)}
+
+/* DIVIDER */
+.co-div{height:1px;background:var(--brd);margin:28px 0 24px}
+
+/* TABLE */
+.ctable{background:var(--sur);border:1px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.ctable table{width:100%;border-collapse:collapse;font-size:12px}
+.ctable th{background:var(--bg);color:var(--t2);text-align:left;padding:9px 13px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--brd)}
+.ctable td{padding:9px 13px;border-bottom:1px solid var(--brd);color:var(--tx)}
+.ctable tbody tr:last-child td{border-bottom:none}
+.ctable tbody tr:hover{background:var(--bg)}
+.ctable tfoot td{background:var(--bg);font-weight:700;font-size:11px;color:var(--tx);border-top:1px solid var(--brd2)}
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.tg{background:rgba(22,163,74,.1);color:var(--green)}.to{background:rgba(212,85,10,.1);color:var(--e)}
+.tr{background:rgba(220,38,38,.1);color:var(--red)}.tn{background:rgba(0,0,0,.05);color:var(--t2)}
+
+/* STATUS PILL */
+.status-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700}
+.status-on{background:rgba(22,163,74,.1);color:var(--green);border:1px solid rgba(22,163,74,.15)}
+.status-off{background:rgba(0,0,0,.04);color:var(--t2);border:1px solid var(--brd)}
+.status-on::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green)}
+.status-off::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--t3)}
+
+/* CO PILL */
+.co-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.co-pill.goalfy{background:var(--g-lt);color:var(--g);border:1px solid rgba(123,63,228,.15)}
+.co-pill.educ{background:var(--e-lt);color:var(--e);border:1px solid rgba(212,85,10,.15)}
+.co-pill.assess{background:var(--a-lt);color:var(--a);border:1px solid rgba(0,163,137,.15)}
+.co-pill-dot{width:6px;height:6px;border-radius:2px}
+.co-pill.goalfy .co-pill-dot{background:var(--g)}
+.co-pill.educ .co-pill-dot{background:var(--e)}
+.co-pill.assess .co-pill-dot{background:var(--a)}
+
+/* METAS TABLE */
+.perf-meta{background:var(--sur);border:1px solid var(--brd);border-radius:12px;overflow:hidden;margin-bottom:28px}
+.perf-meta-head{background:var(--bg);padding:10px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--brd)}
+.perf-meta-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--t2)}
+.perf-meta-pace{font-size:9px;font-weight:700;color:var(--t3);margin-left:auto;letter-spacing:.07em;text-transform:uppercase}
+.pm-table{width:100%;border-collapse:collapse}
+.pm-table th{background:transparent;color:var(--t3);text-align:left;padding:8px 18px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--brd)}
+.pm-table td{padding:13px 18px;border-bottom:1px solid var(--brd);vertical-align:top}
+.pm-table tbody tr:last-child td{border-bottom:none}
+.pm-co{font-size:13px;font-weight:700;margin-bottom:2px}
+.pm-co-sub{font-size:10px;color:var(--t3)}
+.pm-val{font-size:20px;font-weight:800;line-height:1;display:inline}
+.pm-sub{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* ALERT */
+.alert{border-radius:9px;padding:11px 15px;margin-bottom:18px;font-size:11px;display:flex;gap:10px;align-items:flex-start}
+.alert-y{background:var(--ylt);color:var(--yellow);border:1px solid rgba(217,119,6,.2)}
+.alert-b{background:rgba(0,0,0,.03);color:var(--t2);border:1px solid var(--brd)}
+
+/* FINDINGS (Insights tab) */
+.finding{display:flex;gap:12px;align-items:flex-start;background:var(--sur);border:1px solid var(--brd);border-left:3px solid var(--brd2);border-radius:9px;padding:12px 15px;margin-bottom:8px}
+.finding-icon{font-size:15px;line-height:1.3;flex-shrink:0}
+.finding-camp{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--t2);margin-bottom:3px}
+.finding-msg{font-size:12px;color:var(--tx);margin-bottom:4px}
+.finding-action{font-size:11px;color:var(--t2)}
+.finding-action strong{color:var(--tx);font-weight:700}
+.finding.critical{border-left-color:var(--red)}
+.finding.warning{border-left-color:var(--yellow)}
+.finding.opportunity{border-left-color:var(--green)}
+.finding.info{border-left-color:var(--g)}
+.finding-empty{font-size:12px;color:var(--t3);padding:10px 0}
+
+/* STRATEGY (visão do gestor de tráfego, gerada por IA) */
+.strategy-box{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:16px 18px}
+.strategy-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;background:var(--g);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.strategy-btn:hover{opacity:.85}
+.strategy-btn:disabled{opacity:.5;cursor:not-allowed}
+.strategy-content{margin-top:14px;font-size:13px;line-height:1.65;color:var(--tx)}
+.strategy-content:empty{display:none}
+.strategy-content h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin:16px 0 6px}
+.strategy-content h4:first-child{margin-top:0}
+.strategy-content p{margin-bottom:8px}
+.strategy-content ul{padding-left:18px;margin-bottom:8px}
+.strategy-content li{margin-bottom:5px}
+
+/* FOOTER */
+footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-top:1px solid var(--brd);margin-top:48px}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loadingTxt">Carregando Meta Ads...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-badge">⬡ Hapo Group · Dashboard Executivo</div>
+    <h1>Performance de <span>Marketing</span></h1>
+    <div class="hero-meta">
+      <span class="hero-period" id="heroPeriod">—</span>
+      <span class="live-badge">● LIVE</span>
+      <span class="last-upd" id="lastUpdated"></span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-kpis">
+      <div class="hk"><div class="hk-n purple" id="hkInvest">—</div><div class="hk-l">Invest. Grupo</div></div>
+      <div class="hk"><div class="hk-n" id="hkLeads">—</div><div class="hk-l">Leads Total</div></div>
+      <div class="hk"><div class="hk-n purple" id="hkGLeads">—</div><div class="hk-l">Goalfy</div></div>
+      <div class="hk"><div class="hk-n orange" id="hkELeads">—</div><div class="hk-l">Educação</div></div>
+      <div class="hk"><div class="hk-n teal" id="hkALeads">—</div><div class="hk-l">Assessoria</div></div>
+    </div>
+    <div class="hero-btns">
+
+      <!-- ── DATE PICKER ── -->
+      <div class="dp-wrap" id="dpWrap">
+        <button class="dp-trigger" id="dpTrigger" onclick="dpToggle()">
+          <span class="dp-icon">📅</span>
+          <span id="dpLabel">—</span>
+          <span class="dp-caret">▾</span>
+        </button>
+        <div class="dp-dropdown" id="dpDropdown">
+          <!-- Shortcuts -->
+          <div class="dp-shortcuts">
+            <button class="dp-sc" data-sc="this_month" onclick="dpShortcut(this)">Este mês</button>
+            <button class="dp-sc" data-sc="last_7d"    onclick="dpShortcut(this)">Últ. 7 dias</button>
+            <button class="dp-sc" data-sc="last_14d"   onclick="dpShortcut(this)">Últ. 14 dias</button>
+            <button class="dp-sc" data-sc="last_30d"   onclick="dpShortcut(this)">Últ. 30 dias</button>
+            <button class="dp-sc" data-sc="last_month" onclick="dpShortcut(this)">Mês passado</button>
+          </div>
+          <!-- Calendar nav -->
+          <div class="cal-head">
+            <button class="cal-nav" onclick="dpPrevMonth()">&#8249;</button>
+            <span class="cal-month-lbl" id="calMonthLbl">—</span>
+            <button class="cal-nav" onclick="dpNextMonth()">&#8250;</button>
+          </div>
+          <!-- Weekday headers -->
+          <div class="cal-wdays">
+            <div class="cal-wd">Seg</div><div class="cal-wd">Ter</div><div class="cal-wd">Qua</div>
+            <div class="cal-wd">Qui</div><div class="cal-wd">Sex</div><div class="cal-wd">Sáb</div>
+            <div class="cal-wd">Dom</div>
+          </div>
+          <!-- Day grid -->
+          <div class="cal-grid" id="calGrid"></div>
+          <!-- Status -->
+          <div class="dp-status" id="dpStatus">Clique para selecionar a data inicial</div>
+          <!-- Footer -->
+          <div class="dp-foot">
+            <button class="dp-cancel" onclick="dpClose()">Cancelar</button>
+            <button class="dp-apply" id="dpApply" onclick="dpApply()" disabled>Aplicar e Atualizar</button>
+          </div>
+        </div>
+      </div>
+      <!-- ── END DATE PICKER ── -->
+
+      <button class="refresh-btn" id="btnRefresh" onclick="refreshDashboard()">
+        <span class="ri">↻</span> Atualizar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="ntab on" onclick="goTab('visao',this)">Visão Geral</button>
+  <button class="ntab" onclick="goTab('metas',this)">Metas &amp; Pace</button>
+  <button class="ntab" onclick="goTab('campanhas',this)">Campanhas</button>
+  <button class="ntab" onclick="goTab('metadiaria',this)">Meta Diária</button>
+  <button class="ntab" onclick="goTab('insights',this)">Insights</button>
+</div>
+
+<div class="page">
+
+<!-- ══════ TAB 1 ══════ -->
+<div id="visao">
+<div class="stitle mb28">Resumo por frente · <span id="visaoMonth">—</span></div>
+<div class="co-grid">
+  <div class="co-card goalfy"><div class="co-glow"></div>
+    <div class="co-name">Goalfy</div>
+    <div class="co-invest"><sub>R$</sub><span id="gSpend">—</span></div>
+    <div class="co-invest-l">investido em Meta Ads</div>
+    <div class="co-bar"><div class="co-bar-fill" id="gBar" style="width:100%"></div></div>
+    <div class="co-stats"><div><strong id="gLeads">—</strong> leads · <strong id="gCpl">—</strong> CPL</div><div>Meta: R$53,61</div></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="gCplBadge" class="badge bn">—</span></div>
+  </div>
+  <div class="co-card educ"><div class="co-glow"></div>
+    <div class="co-name">Hapo Educação</div>
+    <div class="co-invest"><sub>R$</sub><span id="eSpend">—</span></div>
+    <div class="co-invest-l">investido em Meta Ads</div>
+    <div class="co-bar"><div class="co-bar-fill" id="eBar" style="width:60%"></div></div>
+    <div class="co-stats"><div><strong id="eLeads">—</strong> leads · <strong id="eCpl">—</strong> CPL</div><div>Meta: R$31,57</div></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="eCplBadge" class="badge bn">—</span></div>
+  </div>
+  <div class="co-card assess"><div class="co-glow"></div>
+    <div class="co-name">Hapo Assessoria</div>
+    <div class="co-invest"><sub>R$</sub><span id="aSpend">—</span></div>
+    <div class="co-invest-l">investido em Meta Ads</div>
+    <div class="co-bar"><div class="co-bar-fill" id="aBar" style="width:45%"></div></div>
+    <div class="co-stats"><div><strong id="aLeads">—</strong> leads · <strong id="aCpl">—</strong> CPL</div><div>Meta: R$50,55</div></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="aCplBadge" class="badge bn">—</span></div>
+  </div>
+</div>
+
+<div class="stitle mb28">Goalfy · detalhamento</div>
+<div class="kpi-grid">
+  <div class="kpi p"><div class="kpi-l">Leads</div><div class="kpi-v purple" id="g-kpi-leads">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="g-kpi-spend">—</div></div>
+  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="g-kpi-cpl">—</div><div class="kpi-s">meta R$53,61</div><span class="badge bn" id="g-kpi-cpldiff">—</span></div>
+  <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="g-kpi-imp">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="g-kpi-reach">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="g-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
+</div>
+<div class="two-col">
+  <div class="card"><div class="card-t">CPL por campanha — Goalfy</div><div id="g-cpl-bars"><div style="color:var(--t3);font-size:11px">Carregando...</div></div></div>
+  <div class="card"><div class="card-t">Resumo</div><div id="g-insight"></div></div>
+</div>
+<div class="co-div"></div>
+
+<div class="stitle mb28">Hapo Educação · detalhamento</div>
+<div class="kpi-grid">
+  <div class="kpi o"><div class="kpi-l">Leads</div><div class="kpi-v orange" id="e-kpi-leads">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="e-kpi-spend">—</div></div>
+  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="e-kpi-cpl">—</div><div class="kpi-s">meta R$31,57</div><span class="badge bn" id="e-kpi-cpldiff">—</span></div>
+  <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="e-kpi-imp">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="e-kpi-reach">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="e-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
+</div>
+<div class="two-col">
+  <div class="card"><div class="card-t">CPL por campanha — Educação</div><div id="e-cpl-bars"></div></div>
+  <div class="card"><div class="card-t">Resumo</div><div id="e-insight"></div></div>
+</div>
+<div class="co-div"></div>
+
+<div class="stitle mb28">Hapo Assessoria · detalhamento</div>
+<div class="kpi-grid">
+  <div class="kpi t"><div class="kpi-l">Leads</div><div class="kpi-v teal" id="a-kpi-leads">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="a-kpi-spend">—</div></div>
+  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="a-kpi-cpl">—</div><div class="kpi-s">meta R$50,55</div><span class="badge bn" id="a-kpi-cpldiff">—</span></div>
+  <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="a-kpi-imp">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="a-kpi-reach">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="a-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
+</div>
+<div class="two-col">
+  <div class="card"><div class="card-t">CPL por vertical — Assessoria</div><div id="a-cpl-bars"></div></div>
+  <div class="card"><div class="card-t">Resumo</div><div id="a-insight"></div></div>
+</div>
+</div><!-- /visao -->
+
+<!-- ══════ TAB 2: METAS ══════ -->
+<div id="metas" style="display:none">
+<div class="alert alert-y" id="paceAlertBox"><span>⚠</span><span id="paceAlert">—</span></div>
+<div class="alert alert-b" id="nonMonthNotice" style="display:none"><span>ℹ</span><span id="nonMonthTxt">—</span></div>
+<div class="perf-meta">
+  <div class="perf-meta-head">
+    <span class="perf-meta-title" id="metasTitle">Performance vs Meta</span>
+    <span class="perf-meta-pace" id="paceLabel">—</span>
+  </div>
+  <table class="pm-table">
+    <thead><tr><th>Frente</th><th id="th-leads">Leads</th><th>CPL · Meta</th><th id="th-spend">Verba</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="pm-co" style="color:var(--g)">Goalfy</div><div class="pm-co-sub">Meta: 186 leads · R$10.000/mês</div></td>
+        <td><span class="pm-val" id="pm-g-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-lpct"></span><div class="pm-sub" id="pm-g-lpace"></div></td>
+        <td><span class="pm-val" id="pm-g-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-cpct"></span><div class="pm-sub">meta: R$53,61</div></td>
+        <td><span class="pm-val" id="pm-g-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-spct"></span><div class="pm-sub" id="pm-g-space"></div></td>
+      </tr>
+      <tr>
+        <td><div class="pm-co" style="color:var(--e)">Hapo Educação</div><div class="pm-co-sub">Meta: 158 leads · R$5.000/mês</div></td>
+        <td><span class="pm-val" id="pm-e-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-lpct"></span><div class="pm-sub" id="pm-e-lpace"></div></td>
+        <td><span class="pm-val" id="pm-e-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-cpct"></span><div class="pm-sub">meta: R$31,57</div></td>
+        <td><span class="pm-val" id="pm-e-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-spct"></span><div class="pm-sub" id="pm-e-space"></div></td>
+      </tr>
+      <tr>
+        <td><div class="pm-co" style="color:var(--a)">Hapo Assessoria</div><div class="pm-co-sub">Meta: 59 leads · R$3.000/mês</div></td>
+        <td><span class="pm-val" id="pm-a-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-lpct"></span><div class="pm-sub" id="pm-a-lpace"></div></td>
+        <td><span class="pm-val" id="pm-a-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-cpct"></span><div class="pm-sub">meta: R$50,55</div></td>
+        <td><span class="pm-val" id="pm-a-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-spct"></span><div class="pm-sub" id="pm-a-space"></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div id="projSection">
+  <div class="stitle mb28">Projeção de fechamento</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
+    <div style="background:var(--sur);border:1px solid var(--brd);border-top:2px solid var(--g);border-radius:12px;padding:18px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--g);margin-bottom:10px">Goalfy</div>
+      <div style="font-size:26px;font-weight:800;color:var(--tx)" id="proj-g">—</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">leads projetados no mês</div>
+      <div style="margin-top:8px" id="proj-g-badge"></div>
+    </div>
+    <div style="background:var(--sur);border:1px solid var(--brd);border-top:2px solid var(--e);border-radius:12px;padding:18px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--e);margin-bottom:10px">Hapo Educação</div>
+      <div style="font-size:26px;font-weight:800;color:var(--tx)" id="proj-e">—</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">leads projetados no mês</div>
+      <div style="margin-top:8px" id="proj-e-badge"></div>
+    </div>
+    <div style="background:var(--sur);border:1px solid var(--brd);border-top:2px solid var(--a);border-radius:12px;padding:18px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--a);margin-bottom:10px">Hapo Assessoria</div>
+      <div style="font-size:26px;font-weight:800;color:var(--tx)" id="proj-a">—</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">leads projetados no mês</div>
+      <div style="margin-top:8px" id="proj-a-badge"></div>
+    </div>
+  </div>
+</div>
+</div><!-- /metas -->
+
+<!-- ══════ TAB 3: CAMPANHAS ══════ -->
+<div id="campanhas" style="display:none">
+<div class="stitle mb28">Performance por campanha · <span id="campTitle">—</span></div>
+<div class="co-pill goalfy"><div class="co-pill-dot"></div>Goalfy</div>
+<div class="ctable">
+  <table>
+    <thead><tr><th>Campanha</th><th>Status</th><th>Gasto</th><th>Leads</th><th>CPL</th><th>Impressões</th></tr></thead>
+    <tbody id="g-camp-tbody"><tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Carregando...</td></tr></tbody>
+    <tfoot><tr><td>TOTAL</td><td></td><td id="g-foot-spend">—</td><td id="g-foot-leads">—</td><td id="g-foot-cpl">—</td><td id="g-foot-imp">—</td></tr></tfoot>
+  </table>
+</div>
+<div class="co-pill educ"><div class="co-pill-dot"></div>Hapo Educação</div>
+<div class="ctable">
+  <table>
+    <thead><tr><th>Campanha</th><th>Status</th><th>Gasto</th><th>Leads</th><th>CPL</th><th>Impressões</th></tr></thead>
+    <tbody id="e-camp-tbody"><tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Carregando...</td></tr></tbody>
+    <tfoot><tr><td>TOTAL</td><td></td><td id="e-foot-spend">—</td><td id="e-foot-leads">—</td><td id="e-foot-cpl">—</td><td id="e-foot-imp">—</td></tr></tfoot>
+  </table>
+</div>
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria</div>
+<div class="ctable">
+  <table>
+    <thead><tr><th>Campanha</th><th>Status</th><th>Gasto</th><th>Leads</th><th>CPL</th><th>Impressões</th></tr></thead>
+    <tbody id="a-camp-tbody"><tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Carregando...</td></tr></tbody>
+    <tfoot><tr><td>TOTAL</td><td></td><td id="a-foot-spend">—</td><td id="a-foot-leads">—</td><td id="a-foot-cpl">—</td><td id="a-foot-imp">—</td></tr></tfoot>
+  </table>
+</div>
+</div><!-- /campanhas -->
+
+<!-- ══════ TAB 4: META DIÁRIA ══════ -->
+<div id="metadiaria" style="display:none">
+<div class="stitle mb28">Meta diária de leads · <span id="mdPeriod">—</span></div>
+
+<div class="co-pill goalfy"><div class="co-pill-dot"></div>Goalfy · meta <span id="md-g-target">—</span> leads/dia</div>
+<div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+  <div><span class="card-t" style="margin:0">Leads no período</span><div class="pm-val" id="md-g-real">—</div></div>
+  <div><span class="card-t" style="margin:0">Meta do período</span><div class="pm-val" id="md-g-meta">—</div></div>
+  <div><span class="card-t" style="margin:0">Atingido</span><div class="pm-val" id="md-g-pct">—</div></div>
+</div>
+<div style="position:relative;width:100%;height:220px;margin-bottom:28px">
+  <canvas id="chart-daily-g" role="img" aria-label="Leads diários da Goalfy comparados com a meta diária no período selecionado"></canvas>
+</div>
+
+<div class="co-pill educ"><div class="co-pill-dot"></div>Hapo Educação · meta <span id="md-e-target">—</span> leads/dia</div>
+<div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+  <div><span class="card-t" style="margin:0">Leads no período</span><div class="pm-val" id="md-e-real">—</div></div>
+  <div><span class="card-t" style="margin:0">Meta do período</span><div class="pm-val" id="md-e-meta">—</div></div>
+  <div><span class="card-t" style="margin:0">Atingido</span><div class="pm-val" id="md-e-pct">—</div></div>
+</div>
+<div style="position:relative;width:100%;height:220px;margin-bottom:28px">
+  <canvas id="chart-daily-e" role="img" aria-label="Leads diários da Hapo Educação comparados com a meta diária no período selecionado"></canvas>
+</div>
+
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria · meta <span id="md-a-target">—</span> leads/dia</div>
+<div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+  <div><span class="card-t" style="margin:0">Leads no período</span><div class="pm-val" id="md-a-real">—</div></div>
+  <div><span class="card-t" style="margin:0">Meta do período</span><div class="pm-val" id="md-a-meta">—</div></div>
+  <div><span class="card-t" style="margin:0">Atingido</span><div class="pm-val" id="md-a-pct">—</div></div>
+</div>
+<div style="position:relative;width:100%;height:220px">
+  <canvas id="chart-daily-a" role="img" aria-label="Leads diários da Hapo Assessoria comparados com a meta diária no período selecionado"></canvas>
+</div>
+</div><!-- /metadiaria -->
+
+<!-- ══════ TAB 5: INSIGHTS ══════ -->
+<div id="insights" style="display:none">
+<div class="stitle mb28">O que melhorar nas campanhas · <span id="insightsPeriod">—</span></div>
+
+<div class="co-pill goalfy"><div class="co-pill-dot"></div>Goalfy</div>
+<div id="g-findings" class="mb28"></div>
+<div class="strategy-box mb28" id="g-strategy-box">
+  <button class="strategy-btn" onclick="loadStrategy('g','goalfy')">🧠 Gerar visão do gestor de tráfego</button>
+  <div id="g-strategy" class="strategy-content"></div>
+</div>
+
+<div class="co-pill educ"><div class="co-pill-dot"></div>Hapo Educação</div>
+<div id="e-findings" class="mb28"></div>
+<div class="strategy-box mb28" id="e-strategy-box">
+  <button class="strategy-btn" onclick="loadStrategy('e','educ')">🧠 Gerar visão do gestor de tráfego</button>
+  <div id="e-strategy" class="strategy-content"></div>
+</div>
+
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria</div>
+<div id="a-findings" class="mb28"></div>
+<div class="strategy-box mb28" id="a-strategy-box">
+  <button class="strategy-btn" onclick="loadStrategy('a','assess')">🧠 Gerar visão do gestor de tráfego</button>
+  <div id="a-strategy" class="strategy-content"></div>
+</div>
+</div><!-- /insights -->
+
+<footer>Hapo Group · Meta Ads API (tempo real) · Dashboard Live · <span id="footerDate"></span><br>
+<span style="color:var(--red);font-size:10px">⚠ Campanhas deletadas não aparecem na API. Use o Meta Ads Manager para o valor total incluindo campanhas removidas.</span></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<script>
+// ─── METAS ────────────────────────────────────────────────────────────────────
+const METAS = {
+  goalfy: { leads: 186, spend: 10000, cpl: 53.61 },
+  educ:   { leads: 158, spend: 5000,  cpl: 31.57 },
+  assess: { leads: 59,  spend: 3000,  cpl: 50.55 }
+};
+const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const now = new Date();
+let state = {
+  goalfy: null, educ: null, assess: null,
+  lastUpdated: null,
+  startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+  endDate:   new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+  daily: { goalfy: null, educ: null, assess: null, forRange: null },
+  insights: { goalfy: null, educ: null, assess: null, forRange: null }
+};
+let dailyCharts = { g: null, e: null, a: null };
+
+// ─── DATE PICKER STATE ────────────────────────────────────────────────────────
+let dp = {
+  open: false,
+  phase: 'start',       // 'start' | 'end'
+  start: null,          // Date — confirmed start
+  end:   null,          // Date — confirmed end
+  tmpStart: null,       // Date — being selected
+  hover: null,          // Date — hovered
+  viewYear:  now.getFullYear(),
+  viewMonth: now.getMonth()
+};
+
+// ─── DATE HELPERS ─────────────────────────────────────────────────────────────
+function toISO(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function toBR(d) { return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function sameDay(a,b){ return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function stripTime(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+
+function shortcutDates(sc) {
+  const t = new Date(); t.setHours(0,0,0,0);
+  if (sc==='this_month')  return { s: new Date(t.getFullYear(),t.getMonth(),1), e: t };
+  if (sc==='last_7d')     { const s=new Date(t); s.setDate(t.getDate()-6); return {s,e:t}; }
+  if (sc==='last_14d')    { const s=new Date(t); s.setDate(t.getDate()-13); return {s,e:t}; }
+  if (sc==='last_30d')    { const s=new Date(t); s.setDate(t.getDate()-29); return {s,e:t}; }
+  if (sc==='last_month') {
+    const s=new Date(t.getFullYear(),t.getMonth()-1,1);
+    const e=new Date(t.getFullYear(),t.getMonth(),0);
+    return {s,e};
+  }
+  return null;
+}
+
+// ─── DATE PICKER LOGIC ────────────────────────────────────────────────────────
+function dpToggle() {
+  dp.open ? dpClose() : dpOpen();
+}
+
+function dpOpen() {
+  dp.open = true;
+  dp.phase = 'start';
+  dp.tmpStart = null;
+  dp.hover = null;
+  // Init from confirmed state
+  dp.start = state.startDate ? new Date(state.startDate) : null;
+  dp.end   = state.endDate   ? new Date(state.endDate)   : null;
+  dp.viewYear  = (dp.end || new Date()).getFullYear();
+  dp.viewMonth = (dp.end || new Date()).getMonth();
+  document.getElementById('dpTrigger').classList.add('open');
+  const dd = document.getElementById('dpDropdown');
+  dd.classList.add('open');
+  // Position fixed relative to trigger button
+  const rect = document.getElementById('dpTrigger').getBoundingClientRect();
+  dd.style.top   = (rect.bottom + 6) + 'px';
+  dd.style.right  = (window.innerWidth - rect.right) + 'px';
+  // Stop clicks inside dropdown from bubbling to document (prevents accidental close)
+  dd.addEventListener('click', dpStopProp);
+  dpRender();
+  // Close when clicking outside
+  setTimeout(()=>document.addEventListener('click', dpOutsideClick), 0);
+}
+
+function dpClose() {
+  dp.open = false;
+  document.getElementById('dpTrigger').classList.remove('open');
+  const dd = document.getElementById('dpDropdown');
+  dd.classList.remove('open');
+  dd.removeEventListener('click', dpStopProp);
+  document.removeEventListener('click', dpOutsideClick);
+}
+
+function dpStopProp(e) { e.stopPropagation(); }
+
+function dpOutsideClick(e) {
+  if (!document.getElementById('dpWrap').contains(e.target)) dpClose();
+}
+
+function dpPrevMonth() { dp.viewMonth--; if(dp.viewMonth<0){dp.viewMonth=11;dp.viewYear--;} document.getElementById('calGrid').innerHTML=''; dpRender(); }
+function dpNextMonth() { dp.viewMonth++; if(dp.viewMonth>11){dp.viewMonth=0;dp.viewYear++;} document.getElementById('calGrid').innerHTML=''; dpRender(); }
+
+function dpShortcut(btn) {
+  document.querySelectorAll('.dp-sc').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = shortcutDates(btn.dataset.sc);
+  if (!d) return;
+  dp.start = d.s; dp.end = d.e; dp.tmpStart = null;
+  dp.phase = 'start'; dp.hover = null;
+  dp.viewYear = d.e.getFullYear(); dp.viewMonth = d.e.getMonth();
+  dpRender();
+  // Auto-apply shortcuts immediately
+  dpApply();
+}
+
+function dpClickDay(dateStr) {
+  const clicked = new Date(dateStr + 'T00:00:00');
+  if (clicked > new Date()) return;
+
+  if (dp.phase === 'start') {
+    dp.start = clicked; dp.end = null; dp.tmpStart = clicked;
+    dp.phase = 'end';
+  } else {
+    if (clicked >= dp.tmpStart) {
+      dp.end = clicked;
+    } else {
+      dp.end = dp.tmpStart; dp.start = clicked; dp.tmpStart = clicked;
+    }
+    dp.phase = 'start'; dp.hover = null; dp.tmpStart = null;
+  }
+  dpUpdateDayClasses();
+  dpUpdateStatus();
+}
+
+function dpHoverDay(dateStr) {
+  if (dp.phase !== 'end') return;
+  dp.hover = new Date(dateStr + 'T00:00:00');
+  dpUpdateDayClasses();
+}
+
+// Builds the month grid HTML — called only when month/year changes
+function dpRender() {
+  document.getElementById('calMonthLbl').textContent = MONTHS_PT[dp.viewMonth] + ' ' + dp.viewYear;
+
+  const today    = stripTime(new Date());
+  const grid     = document.getElementById('calGrid');
+  const firstDay = new Date(dp.viewYear, dp.viewMonth, 1);
+  const startDow = (firstDay.getDay() + 6) % 7;
+  const daysInMo = new Date(dp.viewYear, dp.viewMonth+1, 0).getDate();
+
+  let html = '';
+  for (let i=0; i<startDow; i++) html += '<div class="cal-day empty"></div>';
+  for (let d=1; d<=daysInMo; d++) {
+    const cur      = new Date(dp.viewYear, dp.viewMonth, d);
+    const isFuture = cur > today;
+    const isToday  = sameDay(cur, today);
+    const ds       = toISO(cur);
+    let cls = 'cal-day';
+    if (isFuture) cls += ' disabled';
+    if (isToday)  cls += ' today';
+    html += `<div class="${cls}" data-date="${ds}">${d}</div>`;
+  }
+  grid.innerHTML = html;
+
+  // Attach event listeners once (not via inline attrs, so DOM rebuild on month nav is safe)
+  grid.querySelectorAll('.cal-day[data-date]').forEach(el => {
+    const ds  = el.dataset.date;
+    const cur = new Date(ds + 'T00:00:00');
+    if (cur <= today) {
+      el.addEventListener('click',       () => dpClickDay(ds));
+      el.addEventListener('mouseenter',  () => dpHoverDay(ds));
+    }
+  });
+  grid.addEventListener('mouseleave', () => { dp.hover = null; dpUpdateDayClasses(); });
+
+  dpUpdateDayClasses();
+  dpUpdateStatus();
+}
+
+// Updates selection highlight classes without rebuilding HTML
+function dpUpdateDayClasses() {
+  const hStart   = dp.start;
+  const hEnd     = (dp.phase==='end' && dp.hover) ? dp.hover : dp.end;
+  const daysInMo = new Date(dp.viewYear, dp.viewMonth+1, 0).getDate();
+
+  document.querySelectorAll('#calGrid .cal-day[data-date]').forEach(el => {
+    const cur     = new Date(el.dataset.date + 'T00:00:00');
+    const d       = cur.getDate();
+    const isStart = hStart && sameDay(cur, hStart);
+    const isEnd   = hEnd   && sameDay(cur, hEnd);
+    const inRange = hStart && hEnd && cur > hStart && cur < hEnd;
+
+    el.classList.remove('sel-start','sel-end','in-range','range-start-edge','range-end-edge');
+    if (isStart) el.classList.add('sel-start');
+    if (isEnd && !(hStart && sameDay(hStart, hEnd))) el.classList.add('sel-end');
+    if (inRange) el.classList.add('in-range');
+    if ((inRange || isEnd) && hStart) {
+      const prev = new Date(dp.viewYear, dp.viewMonth, d-1);
+      if (sameDay(prev, hStart) || d===1) el.classList.add('range-start-edge');
+    }
+    if ((inRange || isStart) && hEnd) {
+      const next = new Date(dp.viewYear, dp.viewMonth, d+1);
+      if (sameDay(next, hEnd) || d===daysInMo) el.classList.add('range-end-edge');
+    }
+  });
+}
+
+function dpUpdateStatus() {
+  const applyBtn = document.getElementById('dpApply');
+  const statusEl = document.getElementById('dpStatus');
+  if (dp.phase === 'end') {
+    statusEl.innerHTML = `<span class="sel-dates">${toBR(dp.start)}</span>&nbsp;→ Clique na data final`;
+    applyBtn.disabled = true;
+  } else if (dp.start && dp.end) {
+    statusEl.innerHTML = `<span class="sel-dates">${toBR(dp.start)} &mdash; ${toBR(dp.end)}</span>`;
+    applyBtn.disabled = false;
+  } else {
+    statusEl.textContent = 'Clique para selecionar a data inicial';
+    applyBtn.disabled = true;
+  }
+  document.querySelectorAll('.dp-sc').forEach(b => b.classList.remove('active'));
+}
+
+function dpApply() {
+  if (!dp.start || !dp.end) return;
+  state.startDate = new Date(dp.start);
+  state.endDate   = new Date(dp.end);
+  dpUpdateTrigger();
+  dpClose();
+  refreshDashboard();
+}
+
+function dpUpdateTrigger() {
+  const s = state.startDate, e = state.endDate;
+  if (!s || !e) return;
+  document.getElementById('dpLabel').textContent = toBR(s) + ' — ' + toBR(e);
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const fmt    = n => Math.round(n).toLocaleString('pt-BR');
+const fmtR   = n => 'R$'+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPct = n => (n>=0?'+':'')+n.toFixed(0)+'%';
+const pctDiff = (a,b) => (a-b)/b*100;
+
+function cplBadge(cpl,meta) {
+  const d=pctDiff(cpl,meta);
+  return d<=5?'bg':d<=20?'bo':'br';
+}
+function cplTag(cpl,meta) {
+  const d=pctDiff(cpl,meta);
+  return d<=5?'tg':d<=20?'to':'tr';
+}
+
+function getDaysInMonth(y,m) { return new Date(y,m+1,0).getDate(); }
+
+function isCurrentMonthRange() {
+  const s = state.startDate, e = state.endDate;
+  if (!s||!e) return false;
+  const n = new Date();
+  return s.getFullYear()===n.getFullYear() && s.getMonth()===n.getMonth() && s.getDate()===1;
+}
+
+function periodLabel() {
+  const s=state.startDate, e=state.endDate;
+  if (!s||!e) return '—';
+  if (isCurrentMonthRange()) {
+    const mn=MONTHS_PT[s.getMonth()]; return mn+' '+s.getFullYear();
+  }
+  return toBR(s)+' — '+toBR(e);
+}
+
+// ─── FETCH ────────────────────────────────────────────────────────────────────
+async function fetchAccount(key) {
+  const url = `/api/account/${key}?since=${toISO(state.startDate)}&until=${toISO(state.endDate)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao buscar dados');
+  return data;
+}
+
+async function fetchAccountDaily(key) {
+  const url = `/api/account/${key}/daily?since=${toISO(state.startDate)}&until=${toISO(state.endDate)}`;
+  const res = await fetch(url);
+  const rows = await res.json();
+  if (!res.ok) throw new Error(rows.error || 'Erro ao buscar série diária');
+
+  const byDate = {};
+  rows.forEach(r => { byDate[r.date] = r; });
+  const days=[];
+  const cur=new Date(state.startDate);
+  const end=new Date(state.endDate);
+  while (cur<=end) {
+    const iso=toISO(cur);
+    const b=byDate[iso]||{leads:0,spend:0};
+    days.push({ date:new Date(cur), leads:b.leads, spend:b.spend });
+    cur.setDate(cur.getDate()+1);
+  }
+  return days;
+}
+
+async function fetchAccountInsights(key) {
+  const url = `/api/account/${key}/insights?since=${toISO(state.startDate)}&until=${toISO(state.endDate)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao buscar insights');
+  return data;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderAll() {
+  const s=state;
+  if (!s.goalfy||!s.educ||!s.assess) return;
+  const g=s.goalfy, e=s.educ, a=s.assess;
+  const total=g.spend+e.spend+a.spend;
+  const totalLeads=g.leads+e.leads+a.leads;
+  const maxSpend=Math.max(g.spend,e.spend,a.spend)||1;
+  const isMonth=isCurrentMonthRange();
+  const todayDay=new Date().getDate();
+  const totalDays=getDaysInMonth(new Date().getFullYear(),new Date().getMonth());
+  const pace=isMonth ? todayDay/totalDays : null;
+  const pl=periodLabel();
+
+  // Hero
+  document.getElementById('heroPeriod').textContent = toBR(s.startDate)+' — '+toBR(s.endDate)+(isMonth?' · '+todayDay+' dias':'');
+  document.getElementById('hkInvest').textContent='R$'+fmt(total);
+  document.getElementById('hkLeads').textContent=fmt(totalLeads);
+  document.getElementById('hkGLeads').textContent=fmt(g.leads);
+  document.getElementById('hkELeads').textContent=fmt(e.leads);
+  document.getElementById('hkALeads').textContent=fmt(a.leads);
+  if (s.lastUpdated) {
+    const ts=s.lastUpdated;
+    document.getElementById('lastUpdated').textContent=
+      'atualizado '+pad(ts.getDate())+'/'+pad(ts.getMonth()+1)+' às '+pad(ts.getHours())+':'+pad(ts.getMinutes());
+  }
+  document.getElementById('footerDate').textContent=new Date().toLocaleDateString('pt-BR');
+  document.getElementById('visaoMonth').textContent=pl;
+  document.getElementById('campTitle').textContent=pl;
+  document.getElementById('metasTitle').textContent='Performance vs Meta · '+pl;
+
+  renderCard('g',g,maxSpend,METAS.goalfy.cpl);
+  renderCard('e',e,maxSpend,METAS.educ.cpl);
+  renderCard('a',a,maxSpend,METAS.assess.cpl);
+  renderKpis('g',g,METAS.goalfy.cpl);
+  renderKpis('e',e,METAS.educ.cpl);
+  renderKpis('a',a,METAS.assess.cpl);
+  renderCplBars('g',g.campaigns,METAS.goalfy.cpl);
+  renderCplBars('e',e.campaigns,METAS.educ.cpl);
+  renderCplBars('a',a.campaigns,METAS.assess.cpl);
+  renderInsight('g',g,METAS.goalfy.cpl);
+  renderInsight('e',e,METAS.educ.cpl);
+  renderInsight('a',a,METAS.assess.cpl);
+  renderCampTable('g',g.campaigns,METAS.goalfy.cpl);
+  renderCampTable('e',e.campaigns,METAS.educ.cpl);
+  renderCampTable('a',a.campaigns,METAS.assess.cpl);
+  renderMetas(pace, totalDays, isMonth);
+}
+
+function renderCard(k,data,maxSpend,metaCpl) {
+  document.getElementById(k+'Spend').textContent=fmt(data.spend);
+  document.getElementById(k+'Leads').textContent=fmt(data.leads);
+  document.getElementById(k+'Cpl').textContent=data.cpl?fmtR(data.cpl):'—';
+  document.getElementById(k+'Bar').style.width=Math.min(100,(data.spend/maxSpend)*100)+'%';
+  const el=document.getElementById(k+'CplBadge');
+  if (data.cpl&&data.leads>0){const d=pctDiff(data.cpl,metaCpl);el.textContent=fmtPct(d);el.className='badge '+cplBadge(data.cpl,metaCpl);}
+  else{el.textContent='—';el.className='badge bn';}
+}
+
+function renderKpis(k,data,metaCpl) {
+  document.getElementById(k+'-kpi-leads').textContent=fmt(data.leads);
+  document.getElementById(k+'-kpi-spend').textContent=fmtR(data.spend);
+  document.getElementById(k+'-kpi-cpl').textContent=data.cpl?fmtR(data.cpl):'—';
+  document.getElementById(k+'-kpi-imp').textContent=fmt(data.impressions);
+  const re=document.getElementById(k+'-kpi-reach');
+  if(re) re.textContent=fmt(data.reach);
+  const ce=document.getElementById(k+'-kpi-camps');
+  if(ce) ce.textContent=data.campaigns.length;
+  const el=document.getElementById(k+'-kpi-cpldiff');
+  if(el&&data.cpl&&data.leads>0){const d=pctDiff(data.cpl,metaCpl);el.textContent=fmtPct(d);el.className='badge '+cplBadge(data.cpl,metaCpl);const p=el.closest('.kpi');if(p) p.className='kpi '+(d<=5?'g':d<=20?'o':'r');}
+}
+
+function renderCplBars(k,camps,metaCpl) {
+  const el=document.getElementById(k+'-cpl-bars'); if(!el) return;
+  const wl=camps.filter(c=>c.leads>0&&c.cpl!=null);
+  if(!wl.length){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Sem leads neste período</div>';return;}
+  const maxCpl=Math.max(...wl.map(c=>c.cpl),metaCpl*2);
+  el.innerHTML=wl.map(c=>{
+    const pct=Math.min(100,(c.cpl/maxCpl)*100);
+    const col=c.cpl<=metaCpl?'var(--green)':c.cpl<=metaCpl*1.5?'var(--e)':'var(--red)';
+    const sn=c.name.replace(/\[.*?\]\s*/g,'').replace(/\s+/g,' ').trim().substring(0,32);
+    return `<div class="cpl-row"><div class="cpl-top"><span class="cpl-name">${sn}</span><span class="cpl-val" style="color:${col}">${fmtR(c.cpl)}</span></div><div class="cpl-bg"><div class="cpl-bar" style="width:${pct}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+function renderInsight(k,data,metaCpl) {
+  const el=document.getElementById(k+'-insight'); if(!el) return;
+  const wl=data.campaigns.filter(c=>c.leads>0&&c.cpl!=null);
+  const best=[...wl].sort((a,b)=>a.cpl-b.cpl)[0];
+  const worst=[...wl].sort((a,b)=>b.cpl-a.cpl)[0];
+  let html='';
+  if(best){const s=best.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);html+=`<div class="insight"><strong>${s}</strong> — melhor CPL: ${fmtR(best.cpl)}</div>`;}
+  if(worst&&worst!==best){const s=worst.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);const cls=pctDiff(worst.cpl,metaCpl)>50?'r':'o';html+=`<div class="insight ${cls}" style="margin-top:8px"><strong>${s}</strong> — CPL mais alto: ${fmtR(worst.cpl)}</div>`;}
+  if(!html) html='<div class="insight">Sem campanhas com leads neste período</div>';
+  el.innerHTML=html;
+}
+
+function renderCampTable(k,camps,metaCpl) {
+  const tbody=document.getElementById(k+'-camp-tbody'); if(!tbody) return;
+  if(!camps.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:20px">Sem dados no período</td></tr>';return;}
+  tbody.innerHTML=camps.map(c=>{
+    const ct=c.cpl!=null?`<span class="tag ${cplTag(c.cpl,metaCpl)}">${fmtR(c.cpl)}</span>`:'<span class="tag tn">—</span>';
+    const sh=c.status==='ACTIVE'?'<span class="status-pill status-on">Ativa</span>':'<span class="status-pill status-off">Pausada</span>';
+    const sn=c.name.replace(/\[JM\]\[.*?\]\s*-\s*/g,'').replace(/\[.*?\]\s*/g,'').trim();
+    return `<tr><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.name}">${sn}</td><td>${sh}</td><td>${fmtR(c.spend)}</td><td>${c.leads}</td><td>${ct}</td><td>${fmt(c.impressions)}</td></tr>`;
+  }).join('');
+  const ts=camps.reduce((s,c)=>s+c.spend,0), tl=camps.reduce((s,c)=>s+c.leads,0), tc=tl>0?ts/tl:0, ti=camps.reduce((s,c)=>s+c.impressions,0);
+  document.getElementById(k+'-foot-spend').textContent=fmtR(ts);
+  document.getElementById(k+'-foot-leads').textContent=tl;
+  document.getElementById(k+'-foot-cpl').innerHTML=tc?`<span class="tag ${cplTag(tc,metaCpl)}">${fmtR(tc)}</span>`:'—';
+  document.getElementById(k+'-foot-imp').textContent=fmt(ti);
+}
+
+function renderMetas(pace, totalDays, isMonth) {
+  const todayDay=new Date().getDate();
+  document.getElementById('paceAlertBox').style.display = isMonth?'flex':'none';
+  document.getElementById('nonMonthNotice').style.display = isMonth?'none':'flex';
+  document.getElementById('projSection').style.display = isMonth?'block':'none';
+
+  if (isMonth) {
+    document.getElementById('paceLabel').textContent='Pace '+(pace*100).toFixed(1)+'%';
+    document.getElementById('paceAlert').textContent=`Dados de ${todayDay} dias de ${totalDays} — pace ${(pace*100).toFixed(1)}%. Projeção baseada no ritmo atual.`;
+    document.getElementById('th-leads').textContent='Leads · vs Pace';
+    document.getElementById('th-spend').textContent='Verba · vs Pace';
+  } else {
+    document.getElementById('paceLabel').textContent=toBR(state.startDate)+' — '+toBR(state.endDate);
+    document.getElementById('nonMonthTxt').textContent='Período personalizado. Selecione "Este mês" para ver pace e projeção de fechamento.';
+    document.getElementById('th-leads').textContent='Leads Gerados';
+    document.getElementById('th-spend').textContent='Verba Investida';
+  }
+
+  [['g','goalfy'],['e','educ'],['a','assess']].forEach(([k,key])=>{
+    const data=state[key]; if(!data) return;
+    const m=METAS[key];
+    document.getElementById(`pm-${k}-leads`).textContent=fmt(data.leads);
+    document.getElementById(`pm-${k}-cpl`).textContent=data.cpl?fmtR(data.cpl):'—';
+    document.getElementById(`pm-${k}-spend`).textContent=fmtR(data.spend);
+    const cEl=document.getElementById(`pm-${k}-cpct`);
+    if(cEl&&data.cpl){cEl.textContent=fmtPct(pctDiff(data.cpl,m.cpl));cEl.className='badge '+cplBadge(data.cpl,m.cpl);}
+
+    if (isMonth) {
+      const pl=Math.round(m.leads*pace), ps=Math.round(m.spend*pace);
+      document.getElementById(`pm-${k}-lpace`).textContent='pace: '+pl+' leads';
+      document.getElementById(`pm-${k}-space`).textContent='pace: '+fmtR(ps);
+      const lEl=document.getElementById(`pm-${k}-lpct`); if(lEl){const d=pl>0?pctDiff(data.leads,pl):0;lEl.textContent=fmtPct(d);lEl.className='badge '+(d>=0?'bg':'br');}
+      const sEl=document.getElementById(`pm-${k}-spct`); if(sEl){const d=ps>0?pctDiff(data.spend,ps):0;sEl.textContent=fmtPct(d);sEl.className='badge '+(d<=5?'bg':'br');}
+      const proj=pace>0?Math.round(data.leads/pace):0;
+      document.getElementById(`proj-${k}`).textContent='≈'+fmt(proj);
+      const pd=document.getElementById(`proj-${k}-badge`);
+      if(pd){const dd=pctDiff(proj,m.leads);pd.innerHTML=`<span class="badge ${dd>=0?'bg':'br'}">${fmtPct(dd)} da meta</span>`;}
+    } else {
+      ['lpace','space'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e)e.textContent='';});
+      ['lpct','spct'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e){e.textContent='';e.className='badge bn';}});
+    }
+  });
+}
+
+// ─── REFRESH ──────────────────────────────────────────────────────────────────
+async function refreshDashboard() {
+  if (!state.startDate||!state.endDate) { showToast('Selecione um período primeiro','err'); return; }
+  const btn=document.getElementById('btnRefresh');
+  btn.disabled=true; btn.classList.add('spinning');
+  document.getElementById('loadingOverlay').classList.add('on');
+  const rangeLabel=toBR(state.startDate)+' — '+toBR(state.endDate);
+  try {
+    document.getElementById('loadingTxt').textContent='Goalfy · '+rangeLabel+'...';
+    const gData=await fetchAccount('goalfy');
+    document.getElementById('loadingTxt').textContent='Educação · '+rangeLabel+'...';
+    const eData=await fetchAccount('educ');
+    document.getElementById('loadingTxt').textContent='Assessoria · '+rangeLabel+'...';
+    const aData=await fetchAccount('assess');
+    state.goalfy=gData; state.educ=eData; state.assess=aData;
+    state.lastUpdated=new Date();
+    renderAll();
+    if (document.getElementById('metadiaria').style.display !== 'none') {
+      await loadMetaDiaria();
+    }
+    if (document.getElementById('insights').style.display !== 'none') {
+      await loadInsights();
+    }
+    showToast('✓ Dados atualizados','ok');
+  } catch(err) {
+    console.error(err);
+    showToast('Erro: '+(err.message||'falha').substring(0,80),'err');
+  } finally {
+    btn.disabled=false; btn.classList.remove('spinning');
+    document.getElementById('loadingOverlay').classList.remove('on');
+  }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg,type) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast on '+(type||'inf');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('on'),4000);
+}
+
+// ─── META DIÁRIA ──────────────────────────────────────────────────────────────
+function dailyRangeKey() { return toISO(state.startDate)+'_'+toISO(state.endDate)+'_'+(state.lastUpdated?state.lastUpdated.getTime():''); }
+
+function dailyTarget(key) {
+  const days = getDaysInMonth(state.startDate.getFullYear(), state.startDate.getMonth());
+  return METAS[key].leads/days;
+}
+
+async function loadMetaDiaria() {
+  const key = dailyRangeKey();
+  if (state.daily.forRange===key && state.daily.goalfy) { renderMetaDiaria(); return; }
+  document.getElementById('loadingOverlay').classList.add('on');
+  try {
+    document.getElementById('loadingTxt').textContent='Goalfy · série diária...';
+    const g = await fetchAccountDaily('goalfy');
+    document.getElementById('loadingTxt').textContent='Educação · série diária...';
+    const e = await fetchAccountDaily('educ');
+    document.getElementById('loadingTxt').textContent='Assessoria · série diária...';
+    const a = await fetchAccountDaily('assess');
+    state.daily = { goalfy:g, educ:e, assess:a, forRange:key };
+    renderMetaDiaria();
+  } catch(err) {
+    console.error(err);
+    showToast('Erro ao carregar série diária: '+(err.message||'falha').substring(0,80),'err');
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('on');
+  }
+}
+
+function renderMetaDiariaBlock(k,key,canvasId) {
+  const days = state.daily[key];
+  if (!days) return;
+  const target = dailyTarget(key);
+  const GREEN='#16A34A', RED='#DC2626', MUTED='#9999BB';
+  const accentMap={ g:'#7B3FE4', e:'#D4550A', a:'#00A389' };
+  const accent = accentMap[k];
+
+  const labels = days.map(d=>pad(d.date.getDate())+'/'+pad(d.date.getMonth()+1));
+  const real = days.map(d=>d.leads);
+  const totalReal = real.reduce((s,v)=>s+v,0);
+  const totalTarget = target*days.length;
+  const pct = totalTarget>0 ? (totalReal/totalTarget*100) : 0;
+
+  document.getElementById('md-'+k+'-target').textContent = target.toFixed(1);
+  document.getElementById('md-'+k+'-real').textContent = fmt(totalReal);
+  document.getElementById('md-'+k+'-meta').textContent = fmt(totalTarget);
+  const pctEl = document.getElementById('md-'+k+'-pct');
+  pctEl.textContent = pct.toFixed(0)+'%';
+  pctEl.style.color = pct>=100 ? GREEN : RED;
+
+  if (dailyCharts[k]) dailyCharts[k].destroy();
+  const ctx = document.getElementById(canvasId);
+  dailyCharts[k] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Meta', data: labels.map(()=>target), borderColor:MUTED, borderDash:[6,4], borderWidth:1.5, pointRadius:3, pointBackgroundColor:MUTED, pointBorderWidth:0, fill:false, order:2 },
+        { label:'Real', data: real, borderWidth:2, borderColor:accent,
+          pointRadius:5,
+          pointBackgroundColor: real.map(v=>v>=target?GREEN:RED),
+          pointBorderColor:'#fff', pointBorderWidth:2,
+          segment: { borderColor:(c)=> (c.p0.parsed.y>=target && c.p1.parsed.y>=target) ? GREEN : (c.p0.parsed.y<target && c.p1.parsed.y<target) ? RED : MUTED },
+          fill: { target:0, above:'rgba(22,163,74,.14)', below:'rgba(220,38,38,.14)' },
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display:false },
+        tooltip: {
+          callbacks: {
+            label: (c) => {
+              if (c.dataset.label==='Meta') return 'Meta: '+target.toFixed(1);
+              const d = c.parsed.y - target;
+              const sign = d>=0 ? '+' : '';
+              return 'Real: '+c.parsed.y+' ('+sign+d.toFixed(1)+' vs meta)';
+            }
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero:true, ticks:{ precision:0 } },
+        x: { grid: { display:false } }
+      }
+    }
+  });
+}
+
+function renderMetaDiaria() {
+  document.getElementById('mdPeriod').textContent = periodLabel();
+  renderMetaDiariaBlock('g','goalfy','chart-daily-g');
+  renderMetaDiariaBlock('e','educ','chart-daily-e');
+  renderMetaDiariaBlock('a','assess','chart-daily-a');
+}
+
+// ─── INSIGHTS ─────────────────────────────────────────────────────────────────
+function insightsRangeKey() { return toISO(state.startDate)+'_'+toISO(state.endDate)+'_'+(state.lastUpdated?state.lastUpdated.getTime():''); }
+
+async function loadInsights() {
+  const key = insightsRangeKey();
+  if (state.insights.forRange===key && state.insights.goalfy) { renderInsightsTab(); return; }
+  document.getElementById('loadingOverlay').classList.add('on');
+  try {
+    document.getElementById('loadingTxt').textContent='Goalfy · analisando campanhas...';
+    const g = await fetchAccountInsights('goalfy');
+    document.getElementById('loadingTxt').textContent='Educação · analisando campanhas...';
+    const e = await fetchAccountInsights('educ');
+    document.getElementById('loadingTxt').textContent='Assessoria · analisando campanhas...';
+    const a = await fetchAccountInsights('assess');
+    state.insights = { goalfy:g, educ:e, assess:a, forRange:key };
+    renderInsightsTab();
+  } catch(err) {
+    console.error(err);
+    showToast('Erro ao analisar campanhas: '+(err.message||'falha').substring(0,80),'err');
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('on');
+  }
+}
+
+const FINDING_ICON = { critical:'🔴', warning:'🟡', opportunity:'🟢', info:'🔵' };
+
+function renderFindings(k, data) {
+  document.getElementById('insightsPeriod').textContent = periodLabel();
+  const el = document.getElementById(k+'-findings');
+  if (!data || !data.findings.length) {
+    el.innerHTML = '<div class="finding-empty">Nenhum ponto de atenção identificado neste período — performance dentro do esperado.</div>';
+    return;
+  }
+  el.innerHTML = data.findings.map(f => `
+    <div class="finding ${f.severity}">
+      <span class="finding-icon">${FINDING_ICON[f.severity]||'⚪'}</span>
+      <div>
+        <div class="finding-camp">${f.campaign}</div>
+        <div class="finding-msg">${f.message}</div>
+        <div class="finding-action">→ <strong>${f.action}</strong></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderInsightsTab() {
+  renderFindings('g', state.insights.goalfy);
+  renderFindings('e', state.insights.educ);
+  renderFindings('a', state.insights.assess);
+}
+
+// ─── VISÃO DO GESTOR DE TRÁFEGO (Gemini) ───────────────────────────────────────
+const ALLOWED_STRATEGY_TAGS = new Set(['h4','p','ul','li','strong']);
+function sanitizeStrategyHtml(html) {
+  return String(html).replace(/<(\/?)([a-zA-Z0-9]+)[^>]*>/g, (match, slash, tag) => {
+    tag = tag.toLowerCase();
+    return ALLOWED_STRATEGY_TAGS.has(tag) ? `<${slash}${tag}>` : '';
+  });
+}
+
+async function loadStrategy(k, key) {
+  const box = document.getElementById(k+'-strategy-box');
+  const btn = box.querySelector('.strategy-btn');
+  const content = document.getElementById(k+'-strategy');
+  btn.disabled = true;
+  btn.textContent = '🧠 Analisando como um gestor de tráfego...';
+  try {
+    const url = `/api/account/${key}/strategy?since=${toISO(state.startDate)}&until=${toISO(state.endDate)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao gerar análise');
+    content.innerHTML = sanitizeStrategyHtml(data.html);
+    btn.textContent = '🧠 Gerar novamente';
+  } catch (err) {
+    console.error(err);
+    showToast('Erro ao gerar visão do gestor: '+(err.message||'falha').substring(0,80),'err');
+    btn.textContent = '🧠 Gerar visão do gestor de tráfego';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function goTab(id,btn) {
+  ['visao','metas','campanhas','metadiaria','insights'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if (id==='metadiaria') loadMetaDiaria();
+  if (id==='insights') loadInsights();
+}
+
+// ─── AUTO-REFRESH DIÁRIO (fim do dia) ──────────────────────────────────────────
+// Única atualização automática: perto da virada do dia, pra pegar os números
+// quase finais de hoje antes dele virar "ontem" e entrar no cache do servidor.
+// Fora isso, a atualização é sempre manual (botão "Atualizar").
+const END_OF_DAY_HOUR = 23, END_OF_DAY_MINUTE = 55;
+
+function msUntilEndOfDay() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), END_OF_DAY_HOUR, END_OF_DAY_MINUTE, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  return next.getTime() - now.getTime();
+}
+
+function scheduleEndOfDayRefresh() {
+  setTimeout(async () => {
+    await refreshDashboard();
+    scheduleEndOfDayRefresh();
+  }, msUntilEndOfDay());
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+// Init picker with current month
+dp.start = new Date(state.startDate);
+dp.end   = new Date(state.endDate);
+dpUpdateTrigger();
+refreshDashboard();
+scheduleEndOfDayRefresh();
+</script>
+</body>
+</html>

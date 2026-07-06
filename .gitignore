@@ -1,0 +1,9 @@
+.env
+node_modules/
+data/
+debug.jsonl
+versions/
+thumbnail.png
+server.log
+server.out.log
+server.err.log
