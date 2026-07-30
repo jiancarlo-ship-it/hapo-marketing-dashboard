@@ -266,6 +266,72 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 .strategy-content ul{padding-left:18px;margin-bottom:8px}
 .strategy-content li{margin-bottom:5px}
 
+/* PLANEJAMENTO — Estratégia Educação & Calculadora (aba nova) */
+.pf-card{background:var(--sur);border:1px solid var(--brd);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.pf-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.pf-card-title{font-size:14px;font-weight:800;color:var(--tx);margin-bottom:2px}
+.pf-card-sub{font-size:11.5px;color:var(--t2);margin-bottom:14px}
+.pf-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--e);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.pf-btn:hover{opacity:.85}
+
+.pf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+@media(max-width:900px){.pf-grid{grid-template-columns:repeat(2,1fr)}}
+.pf-field{display:flex;flex-direction:column;gap:5px}
+.pf-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.pf-input-wrap{display:flex;align-items:center;border:1px solid var(--brd2);border-radius:8px;background:var(--bg);padding:0 10px;white-space:nowrap}
+.pf-input-wrap span{color:var(--t3);font-size:12px;flex-shrink:0}
+.pf-input-wrap input{border:none;background:transparent;outline:none;font-size:14px;font-weight:700;color:var(--tx);padding:9px 5px;width:100%;min-width:0;font-variant-numeric:tabular-nums}
+.pf-input-wrap input:disabled{opacity:.5}
+
+.pf-phase-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.pf-phase-row:last-child{border-bottom:none}
+.pf-phase-name{width:190px;font-size:12.5px;font-weight:700;color:var(--tx);flex-shrink:0}
+.pf-phase-row .pf-input-wrap{width:120px;flex-shrink:0}
+.pf-phase-computed{font-size:11.5px;color:var(--t2);margin-left:auto;text-align:right;white-space:nowrap}
+.pf-phase-computed b{color:var(--tx);font-variant-numeric:tabular-nums}
+
+.pf-mini-bar{display:flex;align-items:center;gap:8px;min-width:130px}
+.pf-mini-bar-track{flex:1;height:7px;background:var(--brd);border-radius:4px;overflow:hidden}
+.pf-mini-bar-fill{height:100%;border-radius:4px}
+.pf-mini-bar span{font-size:11px;font-variant-numeric:tabular-nums;color:var(--t2);width:42px;text-align:right;flex-shrink:0}
+
+.pf-callout{display:flex;align-items:center;gap:10px;background:var(--rlt);border:1px solid rgba(220,38,38,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--t2);margin-top:6px}
+.pf-callout.good{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.25)}
+.pf-callout .pf-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+.pf-callout.good .pf-dot{background:var(--green)}
+.pf-callout b{color:var(--red)}
+.pf-callout.good b{color:var(--green)}
+
+.pf-chart-svg{width:100%;height:auto;overflow:visible;font-size:11px}
+.pf-bar-label{fill:var(--tx);font-weight:700;font-size:12px}
+.pf-axis-label{fill:var(--t3);font-size:10px}
+.pf-cat-label{fill:var(--t2);font-size:11px}
+.pf-gridline{stroke:var(--brd);stroke-width:1}
+.pf-baseline{stroke:var(--brd2);stroke-width:1}
+.pf-deadline-line{stroke:var(--t3);stroke-width:1.5;stroke-dasharray:4 3}
+.pf-deadline-text{fill:var(--t2);font-size:10px;font-weight:700}
+.pf-bar{cursor:pointer}
+.pf-bar:hover{filter:brightness(1.08)}
+.pf-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--t2)}
+.pf-legend-item{display:flex;align-items:center;gap:6px}
+.pf-swatch{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+.pf-table{width:100%;border-collapse:collapse;font-size:12px}
+.pf-table th,.pf-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--brd)}
+.pf-table th{color:var(--t2);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+.pf-table td.num,.pf-table th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pf-table tr.pf-deadline-row td{border-bottom:1.5px dashed var(--t3)}
+.pf-table tr:last-child td{border-bottom:none}
+.pf-table tr.pf-row-muted td{color:var(--t2)}
+.pf-footnote{font-size:11px;color:var(--t3);line-height:1.6;margin-top:10px}
+
+.pf-tooltip{position:fixed;pointer-events:none;background:var(--tx);color:var(--bg2);font-size:11.5px;padding:6px 10px;border-radius:6px;line-height:1.4;transform:translate(-50%,-120%);opacity:0;transition:opacity .1s ease;z-index:10000;white-space:nowrap}
+.pf-tooltip.on{opacity:1}
+.pf-tooltip b{font-weight:700}
+
+.pf-calc-result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+@media(max-width:900px){.pf-calc-result-grid{grid-template-columns:repeat(2,1fr)}}
+
 /* FOOTER */
 footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-top:1px solid var(--brd);margin-top:48px}
 </style>
@@ -354,6 +420,8 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
   <button class="ntab" onclick="goTab('campanhas',this)">Campanhas</button>
   <button class="ntab" onclick="goTab('metadiaria',this)">Meta Diária</button>
   <button class="ntab" onclick="goTab('insights',this)">Insights</button>
+  <button class="ntab" onclick="goTab('estrategia',this)">Estratégia Educação</button>
+  <button class="ntab" onclick="goTab('calculadora',this)">Calculadora</button>
 </div>
 
 <div class="page">
@@ -580,6 +648,94 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
   <div id="a-strategy" class="strategy-content"></div>
 </div>
 </div><!-- /insights -->
+
+<!-- ══════ TAB 6: ESTRATÉGIA EDUCAÇÃO (editável) ══════ -->
+<div id="estrategia" style="display:none">
+<div class="stitle mb28">Planejamento de budget · Hapo Educação</div>
+
+<div class="pf-card">
+  <div class="pf-card-head">
+    <div>
+      <div class="pf-card-title">Configuração da estratégia</div>
+      <div class="pf-card-sub" style="margin-bottom:0">Edite a data do evento, o budget e o CPL — as fases abaixo recalculam automaticamente</div>
+    </div>
+    <button class="pf-btn" id="pfResetBtn">↺ Resetar para o cenário inicial</button>
+  </div>
+  <div class="pf-grid">
+    <div class="pf-field"><label for="pfEventDate">Data do evento</label><div class="pf-input-wrap"><input type="date" id="pfEventDate"></div></div>
+    <div class="pf-field"><label for="pfBudget">Budget mensal</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfBudget" min="0" step="50"></div></div>
+    <div class="pf-field"><label for="pfCPL">CPL médio</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfCPL" min="0.01" step="0.5"></div></div>
+    <div class="pf-field"><label>Meta de vendas</label><div class="pf-input-wrap"><input type="text" value="33" disabled></div></div>
+  </div>
+</div>
+
+<div class="pf-card">
+  <div class="pf-card-title">Distribuição por fase</div>
+  <div class="pf-card-sub">Edite % ou R$ — o outro campo se ajusta sozinho ao budget total. As datas de cada fase são calculadas a partir da data do evento.</div>
+  <div id="pfPhaseEditor"></div>
+  <div class="pf-callout" id="pfAllocWarning" style="display:none">
+    <span class="pf-dot"></span><span id="pfAllocWarningText"></span>
+  </div>
+</div>
+
+<div class="kpi-grid" id="pfStats" style="grid-template-columns:repeat(4,1fr)"></div>
+
+<div class="pf-card">
+  <div class="pf-card-title">Leads gerados por fase</div>
+  <div class="pf-card-sub" id="pfFasesCardSub"></div>
+  <svg class="pf-chart-svg" id="pfBarChart" viewBox="0 0 920 300" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="pf-legend">
+    <div class="pf-legend-item"><span class="pf-swatch" style="background:var(--e)"></span>Dentro do prazo (conta para a meta)</div>
+    <div class="pf-legend-item"><span class="pf-swatch" style="background:#F4956A"></span>Depois do prazo (bônus / aquece próxima imersão)</div>
+  </div>
+</div>
+
+<div class="pf-card">
+  <div class="pf-card-title">Detalhe por fase</div>
+  <div class="pf-card-sub">Base para acompanhamento semanal com o time</div>
+  <table class="pf-table">
+    <thead><tr><th>Fase</th><th>Período</th><th class="num">Dias</th><th class="num">Orçamento/dia</th><th class="num">Orçamento total</th><th>% do Budget</th><th class="num">Leads</th></tr></thead>
+    <tbody id="pfTableBody"></tbody>
+  </table>
+  <div class="pf-footnote" id="pfFootnote"></div>
+</div>
+</div><!-- /estrategia -->
+
+<!-- ══════ TAB 7: CALCULADORA ══════ -->
+<div id="calculadora" style="display:none">
+<div class="stitle mb28">Calculadora de cenário · Hapo Educação</div>
+
+<div class="pf-card">
+  <div class="pf-card-title">Calculadora de cenário</div>
+  <div class="pf-card-sub">Altere qualquer variável e veja o resultado de vendas em tempo real</div>
+
+  <div class="pf-grid">
+    <div class="pf-field"><label for="pfCalcBudget">Budget mensal</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfCalcBudget" value="5000" min="0" step="50"></div></div>
+    <div class="pf-field"><label for="pfCalcCPL">Custo por lead (CPL)</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfCalcCPL" value="20" min="0.01" step="0.5"></div></div>
+    <div class="pf-field"><label for="pfCalcQualif">Taxa de qualificação</label><div class="pf-input-wrap"><input type="number" id="pfCalcQualif" value="40" min="0" max="100" step="0.5"><span>%</span></div></div>
+    <div class="pf-field"><label for="pfCalcFechamento">Taxa de fechamento</label><div class="pf-input-wrap"><input type="number" id="pfCalcFechamento" value="25" min="0" max="100" step="0.5"><span>%</span></div></div>
+  </div>
+
+  <div class="kpi n" style="margin-top:16px;margin-bottom:4px">
+    <div class="kpi-l">Taxa de conversão total (leads → vendas) — calculada</div>
+    <div class="kpi-v" id="pfCalcConvTotal">10,0%</div>
+    <div class="kpi-s">Qualificação × Fechamento — não editável diretamente</div>
+  </div>
+
+  <div class="pf-calc-result-grid">
+    <div class="kpi o"><div class="kpi-l">Leads gerados</div><div class="kpi-v" id="pfCalcLeads">250</div><div class="kpi-s">Budget ÷ CPL</div></div>
+    <div class="kpi o"><div class="kpi-l">Leads qualificados</div><div class="kpi-v" id="pfCalcQualificados">100</div><div class="kpi-s">Leads × qualificação</div></div>
+    <div class="kpi o"><div class="kpi-l">Vendas estimadas</div><div class="kpi-v" id="pfCalcVendas">25</div><div class="kpi-s">Qualificados × fechamento</div></div>
+    <div class="kpi r"><div class="kpi-l">Vs. meta de 33</div><div class="kpi-v" id="pfCalcGap">−8</div><div class="kpi-s" id="pfCalcGapFoot">abaixo da meta</div></div>
+  </div>
+
+  <div class="pf-callout" id="pfCalcCallout" style="margin-top:20px">
+    <span class="pf-dot"></span><span id="pfCalcCalloutText">Nesse cenário, o resultado fica <b>8 ingressos</b> abaixo da meta de 33.</span>
+  </div>
+</div>
+</div><!-- /calculadora -->
+
+<div class="pf-tooltip" id="pfTooltip"></div>
 
 <footer>Hapo Group · Meta Ads API (tempo real) · Dashboard Live · <span id="footerDate"></span><br>
 <span style="color:var(--red);font-size:10px">⚠ Campanhas deletadas não aparecem na API. Use o Meta Ads Manager para o valor total incluindo campanhas removidas.</span></footer>
@@ -1274,7 +1430,7 @@ async function loadStrategy(k, key) {
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
 function goTab(id,btn) {
-  ['visao','metas','campanhas','metadiaria','insights'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
+  ['visao','metas','campanhas','metadiaria','insights','estrategia','calculadora'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   if (id==='metadiaria') loadMetaDiaria();
@@ -1308,6 +1464,292 @@ dp.end   = new Date(state.endDate);
 dpUpdateTrigger();
 refreshDashboard();
 scheduleEndOfDayRefresh();
+</script>
+
+<!-- ═══ PLANEJAMENTO: Estratégia Educação (editável) + Calculadora ═══ -->
+<script>
+(function () {
+  const ns = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS(ns, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  const pfTooltip = document.getElementById('pfTooltip');
+
+  function pfDrawBarChart(svgId, data, opts) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    svg.innerHTML = '';
+    const W = 920, H = opts.height || 300;
+    const marginLeft = opts.marginLeft || 50, marginRight = 20, marginTop = 20, marginBottom = 40;
+    const plotW = W - marginLeft - marginRight;
+    const plotH = H - marginTop - marginBottom;
+    const maxVal = opts.maxVal;
+    const gap = opts.gap || 60;
+    const barW = (plotW - gap * (data.length - 1)) / data.length;
+
+    opts.ticks.forEach(function (v) {
+      const y = marginTop + plotH - (v / maxVal) * plotH;
+      svg.appendChild(svgEl('line', { x1: marginLeft, x2: W - marginRight, y1: y, y2: y, class: v === 0 ? 'pf-baseline' : 'pf-gridline' }));
+      const t = svgEl('text', { x: marginLeft - 10, y: y + 4, class: 'pf-axis-label', 'text-anchor': 'end' });
+      t.textContent = opts.tickFormat ? opts.tickFormat(v) : v;
+      svg.appendChild(t);
+    });
+
+    data.forEach(function (d, i) {
+      const x = marginLeft + i * (barW + gap);
+      const barH = (d.value / maxVal) * plotH;
+      const y = marginTop + plotH - barH;
+
+      const rect = svgEl('rect', { x: x, y: y, width: barW, height: barH, fill: d.color, class: 'pf-bar', rx: 4, ry: 4 });
+      rect.addEventListener('mousemove', function (ev) {
+        pfTooltip.innerHTML = '<b>' + d.full + '</b><br>' + (opts.tooltipFormat ? opts.tooltipFormat(d) : d.value);
+        pfTooltip.style.left = ev.clientX + 'px';
+        pfTooltip.style.top = ev.clientY + 'px';
+        pfTooltip.classList.add('on');
+      });
+      rect.addEventListener('mouseleave', function () { pfTooltip.classList.remove('on'); });
+      svg.appendChild(rect);
+
+      const label = svgEl('text', { x: x + barW / 2, y: y - 8, class: 'pf-bar-label', 'text-anchor': 'middle' });
+      label.textContent = opts.labelFormat ? opts.labelFormat(d) : d.value;
+      svg.appendChild(label);
+
+      const cat = svgEl('text', { x: x + barW / 2, y: marginTop + plotH + 20, class: 'pf-cat-label', 'text-anchor': 'middle' });
+      cat.textContent = d.label;
+      svg.appendChild(cat);
+    });
+
+    if (opts.deadlineAfterIndex !== undefined) {
+      const dlX = marginLeft + (opts.deadlineAfterIndex + 1) * (barW + gap) - gap / 2;
+      svg.appendChild(svgEl('line', { x1: dlX, x2: dlX, y1: marginTop - 4, y2: marginTop + plotH, class: 'pf-deadline-line' }));
+      const dlText = svgEl('text', { x: dlX, y: marginTop - 8, class: 'pf-deadline-text', 'text-anchor': 'middle' });
+      dlText.textContent = opts.deadlineLabel || 'Prazo';
+      svg.appendChild(dlText);
+    }
+  }
+
+  // ======================= ESTRATÉGIA EDUCAÇÃO — EDITÁVEL =======================
+  (function () {
+    const DEFAULTS = {
+      eventDate: '2026-08-21',
+      budget: 5000,
+      cpl: 20,
+      phases: [
+        { key: 'A', name: 'A — Volume Máximo', pct: 45.0, soft: false },
+        { key: 'B', name: 'B — Consolidação', pct: 32.3, soft: false },
+        { key: 'C', name: 'C — Sprint de Fechamento', pct: 16.9, soft: false },
+        { key: 'D', name: 'D — Janela do evento', pct: 1.8, soft: true },
+        { key: 'E', name: 'E — Pós-evento', pct: 4.0, soft: true }
+      ]
+    };
+    const META = 33;
+
+    let pfState = { eventDate: DEFAULTS.eventDate, budget: DEFAULTS.budget, cpl: DEFAULTS.cpl,
+      phases: DEFAULTS.phases.map(function (p) { return Object.assign({}, p); }) };
+
+    const pfEventDate = document.getElementById('pfEventDate');
+    const pfBudget = document.getElementById('pfBudget');
+    const pfCPL = document.getElementById('pfCPL');
+    const pfPhaseEditor = document.getElementById('pfPhaseEditor');
+    const pfAllocWarning = document.getElementById('pfAllocWarning');
+    const pfAllocWarningText = document.getElementById('pfAllocWarningText');
+    const pfStats = document.getElementById('pfStats');
+    const pfFasesCardSub = document.getElementById('pfFasesCardSub');
+    const pfTableBody = document.getElementById('pfTableBody');
+    const pfFootnote = document.getElementById('pfFootnote');
+    const pfResetBtn = document.getElementById('pfResetBtn');
+
+    function fmtInt2(n) { return Math.round(n).toLocaleString('pt-BR'); }
+    function fmtCurrency(n) { return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); }
+    function fmtDM(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); }
+    function addDays(d, n) { const nd = new Date(d); nd.setDate(nd.getDate() + n); return nd; }
+    function setVal(elm, value) { if (document.activeElement !== elm) elm.value = value; }
+
+    function computeBounds(eventDateStr) {
+      const E = new Date(eventDateStr + 'T00:00:00');
+      return {
+        A: [addDays(E, -20), addDays(E, -14)],
+        B: [addDays(E, -13), addDays(E, -7)],
+        C: [addDays(E, -6), addDays(E, -3)],
+        D: [addDays(E, -2), E],
+        E: [addDays(E, 1), new Date(E.getFullYear(), E.getMonth() + 1, 0)]
+      };
+    }
+
+    function niceMax(v) {
+      const withHeadroom = Math.max(v * 1.25, 10);
+      const magnitude = Math.pow(10, Math.floor(Math.log10(withHeadroom)));
+      return Math.ceil(withHeadroom / magnitude) * magnitude;
+    }
+
+    pfState.phases.forEach(function (p) {
+      const row = document.createElement('div');
+      row.className = 'pf-phase-row';
+      row.innerHTML =
+        '<div class="pf-phase-name">' + p.name + '</div>' +
+        '<div class="pf-input-wrap"><input type="number" step="0.1" min="0" max="100" class="pf-phase-pct"><span>%</span></div>' +
+        '<div class="pf-input-wrap"><span>R$</span><input type="number" step="10" min="0" class="pf-phase-val"></div>' +
+        '<div class="pf-phase-computed"></div>';
+      pfPhaseEditor.appendChild(row);
+      p.pctEl = row.querySelector('.pf-phase-pct');
+      p.valEl = row.querySelector('.pf-phase-val');
+      p.computedEl = row.querySelector('.pf-phase-computed');
+
+      p.pctEl.addEventListener('input', function () { p.pct = parseFloat(p.pctEl.value) || 0; pfRender(); });
+      p.valEl.addEventListener('input', function () {
+        const val = parseFloat(p.valEl.value) || 0;
+        p.pct = pfState.budget > 0 ? (val / pfState.budget) * 100 : 0;
+        pfRender();
+      });
+    });
+
+    function pfRender() {
+      pfState.eventDate = pfEventDate.value || DEFAULTS.eventDate;
+      pfState.budget = parseFloat(pfBudget.value) || 0;
+      pfState.cpl = parseFloat(pfCPL.value) || 0.0001;
+
+      const bounds = computeBounds(pfState.eventDate);
+      let totalPct = 0, totalVal = 0, totalLeads = 0, leadsUntilDeadline = 0;
+
+      const computed = pfState.phases.map(function (p) {
+        const val = pfState.budget * p.pct / 100;
+        const leads = val / pfState.cpl;
+        const range = bounds[p.key];
+        const dias = Math.round((range[1] - range[0]) / 86400000) + 1;
+        totalPct += p.pct; totalVal += val; totalLeads += leads;
+        if (p.key === 'A' || p.key === 'B' || p.key === 'C') leadsUntilDeadline += leads;
+
+        setVal(p.pctEl, p.pct.toFixed(1));
+        setVal(p.valEl, Math.round(val));
+        p.computedEl.innerHTML = fmtDM(range[0]) + '–' + fmtDM(range[1]) + ' · ' + dias + ' dias · <b>' + fmtInt2(leads) + '</b> leads';
+
+        return { key: p.key, name: p.name, soft: p.soft, pct: p.pct, val: val, leads: leads, dias: dias, start: range[0], end: range[1] };
+      });
+
+      const diff = pfState.budget - totalVal;
+      if (Math.abs(totalPct - 100) > 0.15) {
+        pfAllocWarning.style.display = 'flex';
+        pfAllocWarningText.innerHTML = 'Total alocado: <b>' + totalPct.toFixed(1) + '%</b> (' + fmtCurrency(totalVal) + ') — ' +
+          (diff > 0 ? 'sobram ' + fmtCurrency(diff) : 'excede o budget em ' + fmtCurrency(-diff)) + '. Ajuste as fases para fechar 100%.';
+      } else {
+        pfAllocWarning.style.display = 'none';
+      }
+
+      const vendas = totalLeads * 0.10;
+      const gap = vendas - META;
+      const deadline = computed[2].end;
+
+      pfStats.innerHTML =
+        '<div class="kpi o"><div class="kpi-l">Budget mensal</div><div class="kpi-v" style="font-size:20px">' + fmtCurrency(pfState.budget) + '</div><div class="kpi-s">investimento total em ads</div></div>' +
+        '<div class="kpi o"><div class="kpi-l">CPL médio atual</div><div class="kpi-v" style="font-size:20px">R$ ' + pfState.cpl.toLocaleString('pt-BR') + '</div><div class="kpi-s">custo por lead observado</div></div>' +
+        '<div class="kpi o"><div class="kpi-l">Leads gerados no mês</div><div class="kpi-v" style="font-size:20px">' + fmtInt2(totalLeads) + '</div><div class="kpi-s">' + fmtInt2(leadsUntilDeadline) + ' até o prazo de ' + fmtDM(deadline) + '</div></div>' +
+        '<div class="kpi ' + (gap >= 0 ? 'g' : 'r') + '"><div class="kpi-l">Vendas esperadas (conv. 10%)</div><div class="kpi-v ' + (gap >= 0 ? 'green' : 'red') + '" style="font-size:20px">~' + fmtInt2(vendas) + '</div><div class="kpi-s">meta é ' + META + ' — ' + (gap >= 0 ? 'sobram ~' + fmtInt2(gap) : 'faltam ~' + fmtInt2(-gap)) + '</div></div>';
+
+      pfFasesCardSub.textContent = 'Distribuição do budget ao longo do mês, respeitando o prazo de decisão de ' + fmtDM(deadline) + ' (3 dias antes da imersão em ' + fmtDM(new Date(pfState.eventDate + 'T00:00:00')) + ')';
+
+      const chartData = computed.map(function (c) {
+        return { label: 'Fase ' + c.key, full: 'Fase ' + c.name + ' (' + fmtDM(c.start) + '–' + fmtDM(c.end) + ')', value: c.leads, color: c.soft ? '#F4956A' : 'var(--e)', budgetVal: c.val };
+      });
+      const maxVal = niceMax(Math.max.apply(null, chartData.map(function (d) { return d.value; })));
+      pfDrawBarChart('pfBarChart', chartData, {
+        maxVal: maxVal, ticks: [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal].map(function (v) { return Math.round(v); }),
+        gap: 28, deadlineAfterIndex: 2, deadlineLabel: 'Prazo ' + fmtDM(deadline),
+        labelFormat: function (d) { return fmtInt2(d.value); },
+        tooltipFormat: function (d) { return fmtInt2(d.value) + ' leads · ' + fmtCurrency(d.budgetVal); }
+      });
+
+      pfTableBody.innerHTML = computed.map(function (c) {
+        const perDay = c.dias > 0 ? c.val / c.dias : 0;
+        return '<tr' + (c.key === 'C' ? ' class="pf-deadline-row"' : '') + (c.soft ? ' class="pf-row-muted"' : '') + '>' +
+          '<td>' + c.name + '</td><td>' + fmtDM(c.start) + '–' + fmtDM(c.end) + '</td><td class="num">' + c.dias + '</td>' +
+          '<td class="num">' + fmtCurrency(perDay) + '</td><td class="num">' + fmtCurrency(c.val) + '</td>' +
+          '<td><div class="pf-mini-bar"><div class="pf-mini-bar-track"><div class="pf-mini-bar-fill" style="width:' + Math.min(100, c.pct).toFixed(1) + '%; background:' + (c.soft ? '#F4956A' : 'var(--e)') + ';"></div></div><span>' + c.pct.toFixed(1) + '%</span></div></td>' +
+          '<td class="num">' + fmtInt2(c.leads) + '</td></tr>';
+      }).join('') +
+      '<tr><td colspan="3" style="font-weight:700">Total</td><td class="num" style="font-weight:700">—</td>' +
+      '<td class="num" style="font-weight:700">' + fmtCurrency(totalVal) + '</td><td style="font-weight:700">' + totalPct.toFixed(1) + '%</td>' +
+      '<td class="num" style="font-weight:700">' + fmtInt2(totalLeads) + '</td></tr>';
+
+      pfFootnote.textContent = 'Linha tracejada = prazo de ' + fmtDM(deadline) + ' (3 dias antes da imersão). Fases D e E não contam para a meta de ' + META + ' ingressos deste ciclo — geram base para a próxima imersão.';
+    }
+
+    function pfApplyState(s) {
+      pfEventDate.value = s.eventDate;
+      pfBudget.value = s.budget;
+      pfCPL.value = s.cpl;
+      pfState.phases.forEach(function (p, i) { p.pct = s.phases[i].pct; });
+      pfRender();
+    }
+
+    pfEventDate.addEventListener('input', pfRender);
+    pfBudget.addEventListener('input', pfRender);
+    pfCPL.addEventListener('input', pfRender);
+    pfResetBtn.addEventListener('click', function () { pfApplyState(DEFAULTS); });
+
+    pfApplyState(DEFAULTS);
+  })();
+
+  // ======================= CALCULADORA =======================
+  (function () {
+    const pfCalcBudget = document.getElementById('pfCalcBudget');
+    const pfCalcCPL = document.getElementById('pfCalcCPL');
+    const pfCalcQualif = document.getElementById('pfCalcQualif');
+    const pfCalcFechamento = document.getElementById('pfCalcFechamento');
+    const pfCalcConvTotal = document.getElementById('pfCalcConvTotal');
+    const pfCalcLeads = document.getElementById('pfCalcLeads');
+    const pfCalcQualificados = document.getElementById('pfCalcQualificados');
+    const pfCalcVendas = document.getElementById('pfCalcVendas');
+    const pfCalcGap = document.getElementById('pfCalcGap');
+    const pfCalcGapFoot = document.getElementById('pfCalcGapFoot');
+    const pfCalcCallout = document.getElementById('pfCalcCallout');
+    const pfCalcCalloutText = document.getElementById('pfCalcCalloutText');
+    const META = 33;
+
+    function fmtInt(n) { return Math.round(n).toLocaleString('pt-BR'); }
+    function fmtPct(n) { return n.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%'; }
+
+    function pfUpdateCalc() {
+      const budget = parseFloat(pfCalcBudget.value) || 0;
+      const cpl = parseFloat(pfCalcCPL.value) || 0;
+      const qualif = parseFloat(pfCalcQualif.value) || 0;
+      const fechamento = parseFloat(pfCalcFechamento.value) || 0;
+
+      const convTotal = (qualif / 100) * (fechamento / 100) * 100;
+      const leads = cpl > 0 ? budget / cpl : 0;
+      const qualificados = leads * (qualif / 100);
+      const vendas = qualificados * (fechamento / 100);
+      const gap = vendas - META;
+
+      pfCalcConvTotal.textContent = fmtPct(convTotal);
+      pfCalcLeads.textContent = fmtInt(leads);
+      pfCalcQualificados.textContent = fmtInt(qualificados);
+      pfCalcVendas.textContent = fmtInt(vendas);
+
+      pfCalcVendas.classList.remove('green', 'red');
+      pfCalcGap.classList.remove('green', 'red');
+      pfCalcCallout.classList.remove('good');
+
+      if (gap >= 0) {
+        pfCalcGap.textContent = '+' + fmtInt(gap);
+        pfCalcGap.classList.add('green');
+        pfCalcVendas.classList.add('green');
+        pfCalcGapFoot.textContent = 'acima ou na meta';
+        pfCalcCallout.classList.add('good');
+        pfCalcCalloutText.innerHTML = 'Nesse cenário, a meta de 33 ingressos é <b>atingida</b> — sobra de ' + fmtInt(gap) + ' venda(s).';
+      } else {
+        pfCalcGap.textContent = fmtInt(gap);
+        pfCalcGap.classList.add('red');
+        pfCalcVendas.classList.add('red');
+        pfCalcGapFoot.textContent = 'abaixo da meta';
+        pfCalcCalloutText.innerHTML = 'Nesse cenário, o resultado fica <b>' + fmtInt(Math.abs(gap)) + ' ingresso(s)</b> abaixo da meta de 33.';
+      }
+    }
+    [pfCalcBudget, pfCalcCPL, pfCalcQualif, pfCalcFechamento].forEach(function (input) { input.addEventListener('input', pfUpdateCalc); });
+    pfUpdateCalc();
+  })();
+})();
 </script>
 </body>
 </html>
