@@ -231,17 +231,21 @@ async function getAccountSummary(key, since, until) {
       const cur = byCampaign[r.campaign_id] || {
         name: r.campaign_name,
         status: statuses[r.campaign_id] || 'UNKNOWN',
-        spend: 0, leads: 0, impressions: 0
+        spend: 0, leads: 0, impressions: 0, reach: 0
       };
       cur.spend += spend;
       cur.leads += countLeads(r.actions, leadActionTypes);
       cur.impressions += parseInt(r.impressions, 10) || 0;
+      // Reach somado dia-a-dia — mesma aproximação já usada no reach total da
+      // conta (ver totalReach abaixo): não é reach único deduplicado no
+      // período, mas segue o mesmo padrão do resto do app.
+      cur.reach += parseInt(r.reach, 10) || 0;
       byCampaign[r.campaign_id] = cur;
     }
   }
 
   const campaigns = Object.values(byCampaign)
-    .map(c => ({ ...c, cpl: c.leads > 0 ? c.spend / c.leads : null }))
+    .map(c => ({ ...c, cpl: c.leads > 0 ? c.spend / c.leads : null, frequency: c.reach > 0 ? c.impressions / c.reach : null }))
     .sort((a, b) => b.spend - a.spend);
 
   const totalSpend = campaigns.reduce((s, c) => s + c.spend, 0);

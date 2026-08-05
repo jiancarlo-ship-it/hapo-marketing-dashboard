@@ -504,16 +504,17 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <div class="co-div"></div>
 
 <div class="stitle mb28">Hapo Assessoria · detalhamento</div>
-<div class="kpi-grid">
+<div class="kpi-grid" style="grid-template-columns:repeat(7,1fr)">
   <div class="kpi t"><div class="kpi-l">Leads</div><div class="kpi-v teal" id="a-kpi-leads">—</div></div>
   <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="a-kpi-spend">—</div></div>
   <div class="kpi n"><div class="kpi-l">CPL</div><div class="kpi-v" id="a-kpi-cpl">—</div></div>
   <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="a-kpi-imp">—</div></div>
-  <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="a-kpi-reach">—</div></div>
+  <div class="kpi t"><div class="kpi-l">Alcance</div><div class="kpi-v teal" id="a-kpi-reach">—</div></div>
+  <div class="kpi t"><div class="kpi-l">Frequência</div><div class="kpi-v teal" id="a-kpi-freq">—</div></div>
   <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="a-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
 </div>
 <div class="two-col">
-  <div class="card"><div class="card-t">CPL por vertical — Assessoria</div><div id="a-cpl-bars"></div></div>
+  <div class="card"><div class="card-t">Frequência por campanha — Assessoria</div><div id="a-cpl-bars"></div></div>
   <div class="card"><div class="card-t">Resumo</div><div id="a-insight"></div></div>
 </div>
 </div><!-- /visao -->
@@ -1156,10 +1157,10 @@ function renderAll() {
   renderKpis('a',a,METAS.assess.cpl);
   renderCplBars('g',g.campaigns,METAS.goalfy.cpl);
   renderCplBars('e',e.campaigns,METAS.educ.cpl);
-  renderCplBars('a',a.campaigns,METAS.assess.cpl);
+  renderFreqBars('a',a.campaigns); // Assessoria: frequência/alcance no lugar de CPL
   renderInsight('g',g,METAS.goalfy.cpl);
   renderInsight('e',e,METAS.educ.cpl);
-  renderInsight('a',a,METAS.assess.cpl);
+  renderFreqInsight('a',a); // idem
   renderCampTable('g',g.campaigns,METAS.goalfy.cpl);
   renderCampTable('e',e.campaigns,METAS.educ.cpl);
   renderCampTable('a',a.campaigns,METAS.assess.cpl);
@@ -1210,6 +1211,7 @@ function renderReconhecimento(a, periodLbl) {
   document.getElementById('aReachGoalPct').textContent = reachProgress.toFixed(1) + '%';
   document.getElementById('aReachBar').style.width = reachProgress + '%';
   document.getElementById('aFreqN').textContent = freq.toFixed(2) + 'x';
+  const aKpiFreq = document.getElementById('a-kpi-freq'); if (aKpiFreq) aKpiFreq.textContent = freq.toFixed(2) + 'x';
   document.getElementById('aFreqGoalPct').textContent = freqProgress.toFixed(1) + '%';
   document.getElementById('aFreqBar').style.width = freqProgress + '%';
 }
@@ -1259,6 +1261,43 @@ function renderInsight(k,data,metaCpl) {
   if(best){const s=best.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);html+=`<div class="insight"><strong>${s}</strong> — melhor CPL: ${fmtR(best.cpl)}</div>`;}
   if(worst&&worst!==best){const s=worst.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);const cls=pctDiff(worst.cpl,metaCpl)>50?'r':'o';html+=`<div class="insight ${cls}" style="margin-top:8px"><strong>${s}</strong> — CPL mais alto: ${fmtR(worst.cpl)}</div>`;}
   if(!html) html='<div class="insight">Sem campanhas com leads neste período</div>';
+  el.innerHTML=html;
+}
+
+// Ago/26: Assessoria não analisa mais por CPL — as duas telas abaixo (bars +
+// resumo) espelham renderCplBars/renderInsight mas em cima de frequência e
+// alcance por campanha (campos c.frequency/c.reach vindos do backend).
+function renderFreqBars(k,camps) {
+  const el=document.getElementById(k+'-cpl-bars'); if(!el) return;
+  const wl=camps.filter(c=>c.frequency!=null&&c.reach>0);
+  if(!wl.length){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Sem alcance registrado neste período</div>';return;}
+  const maxFreq=Math.max(...wl.map(c=>c.frequency),META_RECONHECIMENTO.assess.frequencia);
+  el.innerHTML=wl.map(c=>{
+    const pct=Math.min(100,(c.frequency/maxFreq)*100);
+    const col=c.frequency>=5?'var(--red)':c.frequency>=3.5?'var(--e)':'var(--green)';
+    const sn=c.name.replace(/\[.*?\]\s*/g,'').replace(/\s+/g,' ').trim().substring(0,28);
+    return `<div class="cpl-row"><div class="cpl-top"><span class="cpl-name">${sn}</span><span class="cpl-val" style="color:${col}">${c.frequency.toFixed(2)}x <span style="color:var(--t3);font-weight:400">· ${fmt(c.reach)} alcance</span></span></div><div class="cpl-bg"><div class="cpl-bar" style="width:${pct}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+function renderFreqInsight(k,data) {
+  const el=document.getElementById(k+'-insight'); if(!el) return;
+  const wl=data.campaigns.filter(c=>c.frequency!=null&&c.reach>0);
+  if(!wl.length){el.innerHTML='<div class="insight">Sem alcance registrado neste período</div>';return;}
+  const highestFreq=[...wl].sort((a,b)=>b.frequency-a.frequency)[0];
+  const bestReach=[...wl].sort((a,b)=>b.reach-a.reach)[0];
+  let html='';
+  if(highestFreq){
+    const s=highestFreq.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);
+    const cls=highestFreq.frequency>=5?'r':highestFreq.frequency>=3.5?'o':'';
+    const risk=highestFreq.frequency>=3.5?' — risco de saturação, considerar novos criativos':'';
+    html+=`<div class="insight ${cls}"><strong>${s}</strong> — maior frequência: ${highestFreq.frequency.toFixed(2)}x${risk}</div>`;
+  }
+  if(bestReach&&bestReach!==highestFreq){
+    const s=bestReach.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);
+    html+=`<div class="insight" style="margin-top:8px"><strong>${s}</strong> — maior alcance: ${fmt(bestReach.reach)} pessoas</div>`;
+  }
+  if(!html) html='<div class="insight">Sem campanhas com alcance neste período</div>';
   el.innerHTML=html;
 }
 
