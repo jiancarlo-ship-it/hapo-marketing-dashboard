@@ -416,6 +416,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <!-- NAV -->
 <div class="nav">
   <button class="ntab on" onclick="goTab('visao',this)">Visão Geral</button>
+  <button class="ntab" onclick="goTab('reconhecimento',this)">Reconhecimento</button>
   <button class="ntab" onclick="goTab('metas',this)">Metas &amp; Pace</button>
   <button class="ntab" onclick="goTab('campanhas',this)">Campanhas</button>
   <button class="ntab" onclick="goTab('metadiaria',this)">Meta Diária</button>
@@ -500,6 +501,49 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
   <div class="card"><div class="card-t">Resumo</div><div id="a-insight"></div></div>
 </div>
 </div><!-- /visao -->
+
+<!-- ══════ TAB: RECONHECIMENTO (Hapo Assessoria, agosto/26) ══════ -->
+<!-- Ago/26: a meta da Assessoria deixou de ser geração de leads e passou a ser
+     reconhecimento de marca. Acompanha % da audiência impactada e frequência
+     de impacto vs a meta 30%/4x, em vez de CPL/leads. Ver memória do projeto
+     "hapo_assessoria_meta_reconhecimento_agosto" para o histórico da decisão. -->
+<div id="reconhecimento" style="display:none">
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria · meta de reconhecimento</div>
+<div class="stitle mb28">Reconhecimento de marca · <span id="recoMonth">—</span></div>
+
+<div class="alert alert-y" id="recoAlertBox" style="display:none"><span>⚠</span><span id="recoAlert">—</span></div>
+
+<div class="co-grid" style="grid-template-columns:repeat(2,1fr)">
+  <div class="co-card assess"><div class="co-glow"></div>
+    <div class="co-name">% da audiência impactada</div>
+    <div class="co-invest"><span id="recoReachPct">—</span><sub>%</sub></div>
+    <div class="co-invest-l" id="recoReachSub">— pessoas · meta 30% (≈ — pessoas)</div>
+    <div class="co-bar"><div class="co-bar-fill" id="recoReachBar" style="width:0%"></div></div>
+    <div class="co-stats"><div>base 17.000–20.000</div><div><strong id="recoReachProgress">—</strong> da meta</div></div>
+  </div>
+  <div class="co-card assess"><div class="co-glow"></div>
+    <div class="co-name">Frequência de impacto</div>
+    <div class="co-invest"><span id="recoFreq">—</span><sub>x</sub></div>
+    <div class="co-invest-l" id="recoFreqSub">— impressões entregues · meta 4x</div>
+    <div class="co-bar"><div class="co-bar-fill" id="recoFreqBar" style="width:0%"></div></div>
+    <div class="co-stats"><div>impacto por pessoa alcançada</div><div><strong id="recoFreqProgress">—</strong> da meta</div></div>
+  </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+  <div class="kpi n"><div class="kpi-l">Spend no período</div><div class="kpi-v" id="reco-kpi-spend">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Impressions alvo (mês)</div><div class="kpi-v" id="reco-kpi-imptarget">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Reach atual / alvo</div><div class="kpi-v" id="reco-kpi-reach">—</div></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-t">Sobre esta meta</div>
+  <div style="font-size:12px;color:var(--t2);line-height:1.6">
+    Agosto/26: a Hapo Assessoria trocou geração de leads por reconhecimento de marca — meta de <strong style="color:var(--tx)">30% da audiência engajada (17k–20k pessoas) com frequência de 4x</strong>.
+    Frequência = impressões ÷ alcance. Os números reais de fim de mês viram a base pra travar a meta formal do ciclo seguinte, em vez de fixar 30%/4x como definitivo.
+  </div>
+</div>
+</div><!-- /reconhecimento -->
 
 <!-- ══════ TAB 2: METAS ══════ -->
 <div id="metas" style="display:none">
@@ -748,6 +792,12 @@ const METAS = {
   goalfy: { leads: 186, spend: 10000, cpl: 53.61 },
   educ:   { leads: 158, spend: 5000,  cpl: 31.57 },
   assess: { leads: 59,  spend: 3000,  cpl: 50.55 }
+};
+// Agosto/26: meta de reconhecimento da Hapo Assessoria, no lugar de leads.
+// audienceMin/Max vêm da estimativa de audiência engajada do Jian (17k-20k);
+// revisar no próximo ciclo com os números reais de fim de mês.
+const META_RECONHECIMENTO = {
+  assess: { audienceMin: 17000, audienceMax: 20000, pctAlcance: 30, frequencia: 4 }
 };
 const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -1096,6 +1146,49 @@ function renderAll() {
   renderCampTable('e',e.campaigns,METAS.educ.cpl);
   renderCampTable('a',a.campaigns,METAS.assess.cpl);
   renderMetas(pace, totalDays, isMonth);
+  renderReconhecimento(a, pl);
+}
+
+// Ago/26: reconhecimento de marca da Hapo Assessoria (% audiência x frequência)
+// no lugar de leads/CPL. Ver META_RECONHECIMENTO acima.
+function renderReconhecimento(a, periodLbl) {
+  const el = document.getElementById('reconhecimento'); if (!el) return;
+  const m = META_RECONHECIMENTO.assess;
+  const baseMid = (m.audienceMin + m.audienceMax) / 2;
+  const reach = a.reach || 0;
+  const impressions = a.impressions || 0;
+  const freq = reach > 0 ? impressions / reach : 0;
+  const reachPct = baseMid > 0 ? (reach / baseMid) * 100 : 0;
+  const reachTarget = Math.round(baseMid * (m.pctAlcance / 100));
+  const impTargetMin = Math.round(m.audienceMin * (m.pctAlcance / 100) * m.frequencia);
+  const impTargetMax = Math.round(m.audienceMax * (m.pctAlcance / 100) * m.frequencia);
+  const reachProgress = Math.min(100, (reachPct / m.pctAlcance) * 100);
+  const freqProgress = Math.min(100, (freq / m.frequencia) * 100);
+
+  document.getElementById('recoMonth').textContent = periodLbl;
+  document.getElementById('recoReachPct').textContent = reachPct.toFixed(1);
+  document.getElementById('recoReachSub').textContent = `${fmt(reach)} pessoas · meta ${m.pctAlcance}% (≈ ${fmt(reachTarget)} pessoas)`;
+  document.getElementById('recoReachBar').style.width = reachProgress + '%';
+  document.getElementById('recoReachProgress').textContent = reachProgress.toFixed(1) + '%';
+
+  document.getElementById('recoFreq').textContent = freq.toFixed(2);
+  document.getElementById('recoFreqSub').textContent = `${fmt(impressions)} impressões entregues · meta ${m.frequencia}x`;
+  document.getElementById('recoFreqBar').style.width = freqProgress + '%';
+  document.getElementById('recoFreqProgress').textContent = freqProgress.toFixed(1) + '%';
+
+  document.getElementById('reco-kpi-spend').textContent = fmtR(a.spend || 0);
+  document.getElementById('reco-kpi-imptarget').textContent = `${fmt(impTargetMin)}–${fmt(impTargetMax)}`;
+  document.getElementById('reco-kpi-reach').textContent = `${fmt(reach)} / ${fmt(reachTarget)}`;
+
+  const gapBox = document.getElementById('recoAlertBox');
+  const gap = reachProgress - freqProgress;
+  if (gap >= 15) {
+    gapBox.style.display = 'flex';
+    document.getElementById('recoAlert').textContent =
+      `Frequência é o gargalo: alcance já em ${reachProgress.toFixed(1)}% do caminho até a meta, frequência só em ${freqProgress.toFixed(1)}%. Migrar de prospecção para retargeting sobre quem já foi impactado.`;
+  } else {
+    gapBox.style.display = 'none';
+  }
 }
 
 function renderCard(k,data,maxSpend,metaCpl) {
@@ -1430,7 +1523,7 @@ async function loadStrategy(k, key) {
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
 function goTab(id,btn) {
-  ['visao','metas','campanhas','metadiaria','insights','estrategia','calculadora'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
+  ['visao','reconhecimento','metas','campanhas','metadiaria','insights','estrategia','calculadora'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   if (id==='metadiaria') loadMetaDiaria();
