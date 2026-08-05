@@ -449,17 +449,31 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
   </div>
   <div class="co-card assess"><div class="co-glow"></div>
     <div class="co-name">Hapo Assessoria</div>
-    <div class="co-invest"><sub>R$</sub><span id="aSpend">—</span></div>
-    <div class="co-invest-l">investido em Meta Ads</div>
-    <div class="co-bar"><div class="co-bar-fill" id="aBar" style="width:45%"></div></div>
-    <div class="co-stats"><div><strong id="aLeads">—</strong> leads · <strong id="aCpl">—</strong> CPL</div><div>Meta: R$50,55</div></div>
-    <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="aCplBadge" class="badge bn">—</span></div>
-
-    <div class="co-invest-l" style="margin-top:14px;margin-bottom:8px">Meta de reconhecimento · agosto/26</div>
-    <div class="co-stats"><div>Pessoas impactadas: <strong id="aReachN">—</strong></div><div><strong id="aReachGoalPct">—</strong> da meta</div></div>
-    <div class="co-bar"><div class="co-bar-fill" id="aReachBar" style="width:0%"></div></div>
-    <div class="co-stats" style="margin-top:10px"><div>Frequência: <strong id="aFreqN">—</strong></div><div><strong id="aFreqGoalPct">—</strong> da meta</div></div>
-    <div class="co-bar"><div class="co-bar-fill" id="aFreqBar" style="width:0%"></div></div>
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="flex:1;min-width:0">
+        <div class="co-invest"><sub>R$</sub><span id="aSpend">—</span></div>
+        <div class="co-invest-l">investido em Meta Ads</div>
+        <div class="co-bar"><div class="co-bar-fill" id="aBar" style="width:45%"></div></div>
+        <div class="co-stats"><div>Alcance: <strong id="aReachN">—</strong></div><div><strong id="aReachGoalPct">—</strong> da meta</div></div>
+        <div class="co-bar"><div class="co-bar-fill" id="aReachBar" style="width:0%"></div></div>
+        <div class="co-stats"><div>Frequência: <strong id="aFreqN">—</strong></div><div><strong id="aFreqGoalPct">—</strong> da meta</div></div>
+        <div class="co-bar" style="margin-bottom:0"><div class="co-bar-fill" id="aFreqBar" style="width:0%"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:space-between;padding-left:14px;border-left:1px solid var(--brd);min-width:76px">
+        <div>
+          <div class="co-invest-l" style="margin:0 0 3px">Leads</div>
+          <div style="font-size:18px;font-weight:800;color:var(--tx);line-height:1" id="aLeads">—</div>
+        </div>
+        <div>
+          <div class="co-invest-l" style="margin:0 0 3px">CPL</div>
+          <div style="font-size:14px;font-weight:800;color:var(--tx);line-height:1" id="aCpl">—</div>
+        </div>
+        <div>
+          <div class="co-invest-l" style="margin:0 0 3px">vs meta</div>
+          <span id="aCplBadge" class="badge bn">—</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1198,7 +1212,7 @@ function renderReconhecimento(a, periodLbl) {
 
   // Mesmos números, resumidos dentro do card "Hapo Assessoria" da Visão Geral
   // (primeira dobra) — além de leads/CPL, que continuam intactos.
-  document.getElementById('aReachN').textContent = `${fmt(reach)} (${reachPct.toFixed(1)}%)`;
+  document.getElementById('aReachN').textContent = reachPct.toFixed(1) + '%';
   document.getElementById('aReachGoalPct').textContent = reachProgress.toFixed(1) + '%';
   document.getElementById('aReachBar').style.width = reachProgress + '%';
   document.getElementById('aFreqN').textContent = freq.toFixed(2) + 'x';
