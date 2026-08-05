@@ -55,8 +55,12 @@ function getLeadActionTypes(key) {
 }
 
 const METAS = {
-  goalfy: { leads: 186, spend: 10000, cpl: 53.61 },
-  educ:   { leads: 158, spend: 5000,  cpl: 31.57 },
+  goalfy: { leads: 222, spend: 10000, cpl: 45 },
+  educ:   { leads: 250, spend: 5000,  cpl: 20 },
+  // Ago/26: a meta oficial da Assessoria virou reconhecimento (alcance 5.500 /
+  // freq. 4x, ver META_RECONHECIMENTO no index.html) — estes valores de
+  // leads/cpl ficam só como referência interna pra não quebrar telas
+  // secundárias (Meta Diária, prompt de estratégia) que ainda leem daqui.
   assess: { leads: 59,  spend: 3000,  cpl: 50.55 }
 };
 
