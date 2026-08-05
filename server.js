@@ -55,8 +55,12 @@ function getLeadActionTypes(key) {
 }
 
 const METAS = {
-  goalfy: { leads: 186, spend: 10000, cpl: 53.61 },
-  educ:   { leads: 158, spend: 5000,  cpl: 31.57 },
+  goalfy: { leads: 222, spend: 10000, cpl: 45 },
+  educ:   { leads: 250, spend: 5000,  cpl: 20 },
+  // Ago/26: a meta oficial da Assessoria virou reconhecimento (alcance 5.500 /
+  // freq. 4x, ver META_RECONHECIMENTO no index.html) — estes valores de
+  // leads/cpl ficam só como referência interna pra não quebrar telas
+  // secundárias (Meta Diária, prompt de estratégia) que ainda leem daqui.
   assess: { leads: 59,  spend: 3000,  cpl: 50.55 }
 };
 
@@ -227,17 +231,21 @@ async function getAccountSummary(key, since, until) {
       const cur = byCampaign[r.campaign_id] || {
         name: r.campaign_name,
         status: statuses[r.campaign_id] || 'UNKNOWN',
-        spend: 0, leads: 0, impressions: 0
+        spend: 0, leads: 0, impressions: 0, reach: 0
       };
       cur.spend += spend;
       cur.leads += countLeads(r.actions, leadActionTypes);
       cur.impressions += parseInt(r.impressions, 10) || 0;
+      // Reach somado dia-a-dia — mesma aproximação já usada no reach total da
+      // conta (ver totalReach abaixo): não é reach único deduplicado no
+      // período, mas segue o mesmo padrão do resto do app.
+      cur.reach += parseInt(r.reach, 10) || 0;
       byCampaign[r.campaign_id] = cur;
     }
   }
 
   const campaigns = Object.values(byCampaign)
-    .map(c => ({ ...c, cpl: c.leads > 0 ? c.spend / c.leads : null }))
+    .map(c => ({ ...c, cpl: c.leads > 0 ? c.spend / c.leads : null, frequency: c.reach > 0 ? c.impressions / c.reach : null }))
     .sort((a, b) => b.spend - a.spend);
 
   const totalSpend = campaigns.reduce((s, c) => s + c.spend, 0);

@@ -129,7 +129,7 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 .mb28{margin-bottom:28px}
 
 /* CO GRID */
-.co-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px}
+.co-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px;align-items:start}
 @media(max-width:800px){.co-grid{grid-template-columns:1fr}}
 .co-card{background:var(--sur);border:1px solid var(--brd);border-radius:14px;padding:20px 18px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s}
 .co-card:hover{border-color:var(--brd2);box-shadow:0 4px 16px rgba(0,0,0,.06)}
@@ -416,6 +416,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <!-- NAV -->
 <div class="nav">
   <button class="ntab on" onclick="goTab('visao',this)">Visão Geral</button>
+  <button class="ntab" onclick="goTab('reconhecimento',this)">Reconhecimento</button>
   <button class="ntab" onclick="goTab('metas',this)">Metas &amp; Pace</button>
   <button class="ntab" onclick="goTab('campanhas',this)">Campanhas</button>
   <button class="ntab" onclick="goTab('metadiaria',this)">Meta Diária</button>
@@ -435,7 +436,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <div class="co-invest"><sub>R$</sub><span id="gSpend">—</span></div>
     <div class="co-invest-l">investido em Meta Ads</div>
     <div class="co-bar"><div class="co-bar-fill" id="gBar" style="width:100%"></div></div>
-    <div class="co-stats"><div><strong id="gLeads">—</strong> leads · <strong id="gCpl">—</strong> CPL</div><div>Meta: R$53,61</div></div>
+    <div class="co-stats"><div><strong id="gLeads">—</strong> leads · <strong id="gCpl">—</strong> CPL</div><div>Meta: R$45,00</div></div>
     <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="gCplBadge" class="badge bn">—</span></div>
   </div>
   <div class="co-card educ"><div class="co-glow"></div>
@@ -443,16 +444,32 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <div class="co-invest"><sub>R$</sub><span id="eSpend">—</span></div>
     <div class="co-invest-l">investido em Meta Ads</div>
     <div class="co-bar"><div class="co-bar-fill" id="eBar" style="width:60%"></div></div>
-    <div class="co-stats"><div><strong id="eLeads">—</strong> leads · <strong id="eCpl">—</strong> CPL</div><div>Meta: R$31,57</div></div>
+    <div class="co-stats"><div><strong id="eLeads">—</strong> leads · <strong id="eCpl">—</strong> CPL</div><div>Meta: R$20,00</div></div>
     <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="eCplBadge" class="badge bn">—</span></div>
   </div>
   <div class="co-card assess"><div class="co-glow"></div>
     <div class="co-name">Hapo Assessoria</div>
-    <div class="co-invest"><sub>R$</sub><span id="aSpend">—</span></div>
-    <div class="co-invest-l">investido em Meta Ads</div>
-    <div class="co-bar"><div class="co-bar-fill" id="aBar" style="width:45%"></div></div>
-    <div class="co-stats"><div><strong id="aLeads">—</strong> leads · <strong id="aCpl">—</strong> CPL</div><div>Meta: R$50,55</div></div>
-    <div style="margin-top:8px;font-size:10px;color:var(--t2)">CPL vs meta: <span id="aCplBadge" class="badge bn">—</span></div>
+    <div style="display:flex;gap:14px;align-items:stretch">
+      <div style="flex:1;min-width:0">
+        <div class="co-invest"><sub>R$</sub><span id="aSpend">—</span></div>
+        <div class="co-invest-l">investido em Meta Ads</div>
+        <div class="co-bar"><div class="co-bar-fill" id="aBar" style="width:45%"></div></div>
+        <div class="co-stats"><div>Alcance: <strong id="aReachN">—</strong></div><div><strong id="aReachGoalPct">—</strong> da meta</div></div>
+        <div class="co-bar"><div class="co-bar-fill" id="aReachBar" style="width:0%"></div></div>
+        <div class="co-stats"><div>Frequência: <strong id="aFreqN">—</strong></div><div><strong id="aFreqGoalPct">—</strong> da meta</div></div>
+        <div class="co-bar" style="margin-bottom:0"><div class="co-bar-fill" id="aFreqBar" style="width:0%"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:space-between;padding-left:14px;border-left:1px solid var(--brd);min-width:76px">
+        <div>
+          <div class="co-invest-l" style="margin:0 0 3px">Leads</div>
+          <div style="font-size:18px;font-weight:800;color:var(--tx);line-height:1" id="aLeads">—</div>
+        </div>
+        <div>
+          <div class="co-invest-l" style="margin:0 0 3px">CPL</div>
+          <div style="font-size:14px;font-weight:800;color:var(--tx);line-height:1" id="aCpl">—</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -460,7 +477,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <div class="kpi-grid">
   <div class="kpi p"><div class="kpi-l">Leads</div><div class="kpi-v purple" id="g-kpi-leads">—</div></div>
   <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="g-kpi-spend">—</div></div>
-  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="g-kpi-cpl">—</div><div class="kpi-s">meta R$53,61</div><span class="badge bn" id="g-kpi-cpldiff">—</span></div>
+  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="g-kpi-cpl">—</div><div class="kpi-s">meta R$45,00</div><span class="badge bn" id="g-kpi-cpldiff">—</span></div>
   <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="g-kpi-imp">—</div></div>
   <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="g-kpi-reach">—</div></div>
   <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="g-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
@@ -475,7 +492,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <div class="kpi-grid">
   <div class="kpi o"><div class="kpi-l">Leads</div><div class="kpi-v orange" id="e-kpi-leads">—</div></div>
   <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="e-kpi-spend">—</div></div>
-  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="e-kpi-cpl">—</div><div class="kpi-s">meta R$31,57</div><span class="badge bn" id="e-kpi-cpldiff">—</span></div>
+  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="e-kpi-cpl">—</div><div class="kpi-s">meta R$20,00</div><span class="badge bn" id="e-kpi-cpldiff">—</span></div>
   <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="e-kpi-imp">—</div></div>
   <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="e-kpi-reach">—</div></div>
   <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="e-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
@@ -487,19 +504,63 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <div class="co-div"></div>
 
 <div class="stitle mb28">Hapo Assessoria · detalhamento</div>
-<div class="kpi-grid">
+<div class="kpi-grid" style="grid-template-columns:repeat(7,1fr)">
   <div class="kpi t"><div class="kpi-l">Leads</div><div class="kpi-v teal" id="a-kpi-leads">—</div></div>
   <div class="kpi n"><div class="kpi-l">Investido</div><div class="kpi-v" id="a-kpi-spend">—</div></div>
-  <div class="kpi r"><div class="kpi-l">CPL</div><div class="kpi-v" id="a-kpi-cpl">—</div><div class="kpi-s">meta R$50,55</div><span class="badge bn" id="a-kpi-cpldiff">—</span></div>
+  <div class="kpi n"><div class="kpi-l">CPL</div><div class="kpi-v" id="a-kpi-cpl">—</div></div>
   <div class="kpi n"><div class="kpi-l">Impressões</div><div class="kpi-v" id="a-kpi-imp">—</div></div>
-  <div class="kpi n"><div class="kpi-l">Alcance</div><div class="kpi-v" id="a-kpi-reach">—</div></div>
+  <div class="kpi t"><div class="kpi-l">Alcance</div><div class="kpi-v teal" id="a-kpi-reach">—</div></div>
+  <div class="kpi t"><div class="kpi-l">Frequência</div><div class="kpi-v teal" id="a-kpi-freq">—</div></div>
   <div class="kpi n"><div class="kpi-l">Campanhas</div><div class="kpi-v" id="a-kpi-camps">—</div><div class="kpi-s">com gasto</div></div>
 </div>
 <div class="two-col">
-  <div class="card"><div class="card-t">CPL por vertical — Assessoria</div><div id="a-cpl-bars"></div></div>
+  <div class="card"><div class="card-t">Frequência por campanha — Assessoria</div><div id="a-cpl-bars"></div></div>
   <div class="card"><div class="card-t">Resumo</div><div id="a-insight"></div></div>
 </div>
 </div><!-- /visao -->
+
+<!-- ══════ TAB: RECONHECIMENTO (Hapo Assessoria, agosto/26) ══════ -->
+<!-- Ago/26: a meta da Assessoria deixou de ser geração de leads e passou a ser
+     reconhecimento de marca. Acompanha % da audiência impactada e frequência
+     de impacto vs a meta 30%/4x, em vez de CPL/leads. Ver memória do projeto
+     "hapo_assessoria_meta_reconhecimento_agosto" para o histórico da decisão. -->
+<div id="reconhecimento" style="display:none">
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria · meta de reconhecimento</div>
+<div class="stitle mb28">Reconhecimento de marca · <span id="recoMonth">—</span></div>
+
+<div class="alert alert-y" id="recoAlertBox" style="display:none"><span>⚠</span><span id="recoAlert">—</span></div>
+
+<div class="co-grid" style="grid-template-columns:repeat(2,1fr)">
+  <div class="co-card assess"><div class="co-glow"></div>
+    <div class="co-name">Alcance</div>
+    <div class="co-invest"><span id="recoReachPct">—</span></div>
+    <div class="co-invest-l" id="recoReachSub">meta — pessoas</div>
+    <div class="co-bar"><div class="co-bar-fill" id="recoReachBar" style="width:0%"></div></div>
+    <div class="co-stats"><div>pessoas impactadas</div><div><strong id="recoReachProgress">—</strong> da meta</div></div>
+  </div>
+  <div class="co-card assess"><div class="co-glow"></div>
+    <div class="co-name">Frequência de impacto</div>
+    <div class="co-invest"><span id="recoFreq">—</span><sub>x</sub></div>
+    <div class="co-invest-l" id="recoFreqSub">— impressões entregues · meta 4x</div>
+    <div class="co-bar"><div class="co-bar-fill" id="recoFreqBar" style="width:0%"></div></div>
+    <div class="co-stats"><div>impacto por pessoa alcançada</div><div><strong id="recoFreqProgress">—</strong> da meta</div></div>
+  </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+  <div class="kpi n"><div class="kpi-l">Spend no período</div><div class="kpi-v" id="reco-kpi-spend">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Impressions alvo</div><div class="kpi-v" id="reco-kpi-imptarget">—</div></div>
+  <div class="kpi n"><div class="kpi-l">Reach atual / alvo</div><div class="kpi-v" id="reco-kpi-reach">—</div></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-t">Sobre esta meta</div>
+  <div style="font-size:12px;color:var(--t2);line-height:1.6">
+    Agosto/26: a Hapo Assessoria trocou geração de leads por reconhecimento de marca — meta de <strong style="color:var(--tx)">5.500 pessoas alcançadas com frequência de 4x</strong>. CPL e volume de leads deixaram de ser meta pra essa frente.
+    Frequência = impressões ÷ alcance.
+  </div>
+</div>
+</div><!-- /reconhecimento -->
 
 <!-- ══════ TAB 2: METAS ══════ -->
 <div id="metas" style="display:none">
@@ -514,21 +575,21 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <thead><tr><th>Frente</th><th id="th-leads">Leads</th><th>CPL · Meta</th><th id="th-spend">Verba</th></tr></thead>
     <tbody>
       <tr>
-        <td><div class="pm-co" style="color:var(--g)">Goalfy</div><div class="pm-co-sub">Meta: 186 leads · R$10.000/mês</div></td>
+        <td><div class="pm-co" style="color:var(--g)">Goalfy</div><div class="pm-co-sub">Meta: 222 leads · R$10.000/mês</div></td>
         <td><span class="pm-val" id="pm-g-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-lpct"></span><div class="pm-sub" id="pm-g-lpace"></div></td>
-        <td><span class="pm-val" id="pm-g-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-cpct"></span><div class="pm-sub">meta: R$53,61</div></td>
+        <td><span class="pm-val" id="pm-g-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-cpct"></span><div class="pm-sub">meta: R$45,00</div></td>
         <td><span class="pm-val" id="pm-g-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-g-spct"></span><div class="pm-sub" id="pm-g-space"></div></td>
       </tr>
       <tr>
-        <td><div class="pm-co" style="color:var(--e)">Hapo Educação</div><div class="pm-co-sub">Meta: 158 leads · R$5.000/mês</div></td>
+        <td><div class="pm-co" style="color:var(--e)">Hapo Educação</div><div class="pm-co-sub">Meta: 250 leads · R$5.000/mês</div></td>
         <td><span class="pm-val" id="pm-e-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-lpct"></span><div class="pm-sub" id="pm-e-lpace"></div></td>
-        <td><span class="pm-val" id="pm-e-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-cpct"></span><div class="pm-sub">meta: R$31,57</div></td>
+        <td><span class="pm-val" id="pm-e-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-cpct"></span><div class="pm-sub">meta: R$20,00</div></td>
         <td><span class="pm-val" id="pm-e-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-e-spct"></span><div class="pm-sub" id="pm-e-space"></div></td>
       </tr>
       <tr>
-        <td><div class="pm-co" style="color:var(--a)">Hapo Assessoria</div><div class="pm-co-sub">Meta: 59 leads · R$3.000/mês</div></td>
-        <td><span class="pm-val" id="pm-a-leads">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-lpct"></span><div class="pm-sub" id="pm-a-lpace"></div></td>
-        <td><span class="pm-val" id="pm-a-cpl">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-cpct"></span><div class="pm-sub">meta: R$50,55</div></td>
+        <td><div class="pm-co" style="color:var(--a)">Hapo Assessoria</div><div class="pm-co-sub">Meta: alcance 5.500 · freq. 4x</div></td>
+        <td><span class="pm-val" id="pm-a-leads">—</span><div class="pm-sub" style="color:var(--t3)">sem meta de leads</div></td>
+        <td><span class="pm-val" id="pm-a-cpl">—</span><div class="pm-sub" style="color:var(--t3)">sem meta de CPL</div></td>
         <td><span class="pm-val" id="pm-a-spend">—</span><span class="badge bn" style="margin-left:6px;vertical-align:middle" id="pm-a-spct"></span><div class="pm-sub" id="pm-a-space"></div></td>
       </tr>
     </tbody>
@@ -552,7 +613,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <div style="background:var(--sur);border:1px solid var(--brd);border-top:2px solid var(--a);border-radius:12px;padding:18px">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--a);margin-bottom:10px">Hapo Assessoria</div>
       <div style="font-size:26px;font-weight:800;color:var(--tx)" id="proj-a">—</div>
-      <div style="font-size:10px;color:var(--t3);margin-top:2px">leads projetados no mês</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:2px">sem meta de leads · ver aba Reconhecimento</div>
       <div style="margin-top:8px" id="proj-a-badge"></div>
     </div>
   </div>
@@ -612,7 +673,7 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
   <canvas id="chart-daily-e" role="img" aria-label="Leads diários da Hapo Educação comparados com a meta diária no período selecionado"></canvas>
 </div>
 
-<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria · meta <span id="md-a-target">—</span> leads/dia</div>
+<div class="co-pill assess"><div class="co-pill-dot"></div>Hapo Assessoria · sem meta de leads/dia</div>
 <div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
   <div><span class="card-t" style="margin:0">Leads no período</span><div class="pm-val" id="md-a-real">—</div></div>
   <div><span class="card-t" style="margin:0">Meta do período</span><div class="pm-val" id="md-a-meta">—</div></div>
@@ -745,9 +806,17 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
 <script>
 // ─── METAS ────────────────────────────────────────────────────────────────────
 const METAS = {
-  goalfy: { leads: 186, spend: 10000, cpl: 53.61 },
-  educ:   { leads: 158, spend: 5000,  cpl: 31.57 },
+  goalfy: { leads: 222, spend: 10000, cpl: 45 },
+  educ:   { leads: 250, spend: 5000,  cpl: 20 },
+  // leads/cpl da Assessoria ficam só de referência interna (usados por telas
+  // secundárias como Meta Diária/Insights) — a meta oficial dela deixou de
+  // ser leads/CPL, ver META_RECONHECIMENTO abaixo. Não exibir isso como meta.
   assess: { leads: 59,  spend: 3000,  cpl: 50.55 }
+};
+// Agosto/26: meta de reconhecimento da Hapo Assessoria, no lugar de leads/CPL.
+// Alvo fixo definido pelo Jian (alcance 5.500 pessoas, frequência 4x).
+const META_RECONHECIMENTO = {
+  assess: { reachTarget: 5500, frequencia: 4 }
 };
 const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -1088,14 +1157,63 @@ function renderAll() {
   renderKpis('a',a,METAS.assess.cpl);
   renderCplBars('g',g.campaigns,METAS.goalfy.cpl);
   renderCplBars('e',e.campaigns,METAS.educ.cpl);
-  renderCplBars('a',a.campaigns,METAS.assess.cpl);
+  renderFreqBars('a',a.campaigns); // Assessoria: frequência/alcance no lugar de CPL
   renderInsight('g',g,METAS.goalfy.cpl);
   renderInsight('e',e,METAS.educ.cpl);
-  renderInsight('a',a,METAS.assess.cpl);
+  renderFreqInsight('a',a); // idem
   renderCampTable('g',g.campaigns,METAS.goalfy.cpl);
   renderCampTable('e',e.campaigns,METAS.educ.cpl);
   renderCampTable('a',a.campaigns,METAS.assess.cpl);
   renderMetas(pace, totalDays, isMonth);
+  renderReconhecimento(a, pl);
+}
+
+// Ago/26: reconhecimento de marca da Hapo Assessoria (% audiência x frequência)
+// no lugar de leads/CPL. Ver META_RECONHECIMENTO acima.
+function renderReconhecimento(a, periodLbl) {
+  const el = document.getElementById('reconhecimento'); if (!el) return;
+  const m = META_RECONHECIMENTO.assess; // { reachTarget: 5500, frequencia: 4 }
+  const reach = a.reach || 0;
+  const impressions = a.impressions || 0;
+  const freq = reach > 0 ? impressions / reach : 0;
+  const impTarget = Math.round(m.reachTarget * m.frequencia);
+  const reachProgress = Math.min(100, (reach / m.reachTarget) * 100);
+  const freqProgress = Math.min(100, (freq / m.frequencia) * 100);
+
+  document.getElementById('recoMonth').textContent = periodLbl;
+  document.getElementById('recoReachPct').textContent = fmt(reach);
+  document.getElementById('recoReachSub').textContent = `meta ${fmt(m.reachTarget)} pessoas`;
+  document.getElementById('recoReachBar').style.width = reachProgress + '%';
+  document.getElementById('recoReachProgress').textContent = reachProgress.toFixed(1) + '%';
+
+  document.getElementById('recoFreq').textContent = freq.toFixed(2);
+  document.getElementById('recoFreqSub').textContent = `${fmt(impressions)} impressões entregues · meta ${m.frequencia}x`;
+  document.getElementById('recoFreqBar').style.width = freqProgress + '%';
+  document.getElementById('recoFreqProgress').textContent = freqProgress.toFixed(1) + '%';
+
+  document.getElementById('reco-kpi-spend').textContent = fmtR(a.spend || 0);
+  document.getElementById('reco-kpi-imptarget').textContent = fmt(impTarget);
+  document.getElementById('reco-kpi-reach').textContent = `${fmt(reach)} / ${fmt(m.reachTarget)}`;
+
+  const gapBox = document.getElementById('recoAlertBox');
+  const gap = reachProgress - freqProgress;
+  if (gap >= 15) {
+    gapBox.style.display = 'flex';
+    document.getElementById('recoAlert').textContent =
+      `Frequência é o gargalo: alcance já em ${reachProgress.toFixed(1)}% do caminho até a meta, frequência só em ${freqProgress.toFixed(1)}%. Migrar de prospecção para retargeting sobre quem já foi impactado.`;
+  } else {
+    gapBox.style.display = 'none';
+  }
+
+  // Mesmos números, resumidos dentro do card "Hapo Assessoria" da Visão Geral
+  // (primeira dobra) — além de leads/CPL, que continuam intactos.
+  document.getElementById('aReachN').textContent = fmt(reach);
+  document.getElementById('aReachGoalPct').textContent = reachProgress.toFixed(1) + '%';
+  document.getElementById('aReachBar').style.width = reachProgress + '%';
+  document.getElementById('aFreqN').textContent = freq.toFixed(2) + 'x';
+  const aKpiFreq = document.getElementById('a-kpi-freq'); if (aKpiFreq) aKpiFreq.textContent = freq.toFixed(2) + 'x';
+  document.getElementById('aFreqGoalPct').textContent = freqProgress.toFixed(1) + '%';
+  document.getElementById('aFreqBar').style.width = freqProgress + '%';
 }
 
 function renderCard(k,data,maxSpend,metaCpl) {
@@ -1103,7 +1221,7 @@ function renderCard(k,data,maxSpend,metaCpl) {
   document.getElementById(k+'Leads').textContent=fmt(data.leads);
   document.getElementById(k+'Cpl').textContent=data.cpl?fmtR(data.cpl):'—';
   document.getElementById(k+'Bar').style.width=Math.min(100,(data.spend/maxSpend)*100)+'%';
-  const el=document.getElementById(k+'CplBadge');
+  const el=document.getElementById(k+'CplBadge'); if(!el) return; // Assessoria não tem mais esse badge (ver aCplBadge removido)
   if (data.cpl&&data.leads>0){const d=pctDiff(data.cpl,metaCpl);el.textContent=fmtPct(d);el.className='badge '+cplBadge(data.cpl,metaCpl);}
   else{el.textContent='—';el.className='badge bn';}
 }
@@ -1143,6 +1261,43 @@ function renderInsight(k,data,metaCpl) {
   if(best){const s=best.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);html+=`<div class="insight"><strong>${s}</strong> — melhor CPL: ${fmtR(best.cpl)}</div>`;}
   if(worst&&worst!==best){const s=worst.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);const cls=pctDiff(worst.cpl,metaCpl)>50?'r':'o';html+=`<div class="insight ${cls}" style="margin-top:8px"><strong>${s}</strong> — CPL mais alto: ${fmtR(worst.cpl)}</div>`;}
   if(!html) html='<div class="insight">Sem campanhas com leads neste período</div>';
+  el.innerHTML=html;
+}
+
+// Ago/26: Assessoria não analisa mais por CPL — as duas telas abaixo (bars +
+// resumo) espelham renderCplBars/renderInsight mas em cima de frequência e
+// alcance por campanha (campos c.frequency/c.reach vindos do backend).
+function renderFreqBars(k,camps) {
+  const el=document.getElementById(k+'-cpl-bars'); if(!el) return;
+  const wl=camps.filter(c=>c.frequency!=null&&c.reach>0);
+  if(!wl.length){el.innerHTML='<div style="color:var(--t3);font-size:11px;padding:8px 0">Sem alcance registrado neste período</div>';return;}
+  const maxFreq=Math.max(...wl.map(c=>c.frequency),META_RECONHECIMENTO.assess.frequencia);
+  el.innerHTML=wl.map(c=>{
+    const pct=Math.min(100,(c.frequency/maxFreq)*100);
+    const col=c.frequency>=5?'var(--red)':c.frequency>=3.5?'var(--e)':'var(--green)';
+    const sn=c.name.replace(/\[.*?\]\s*/g,'').replace(/\s+/g,' ').trim().substring(0,28);
+    return `<div class="cpl-row"><div class="cpl-top"><span class="cpl-name">${sn}</span><span class="cpl-val" style="color:${col}">${c.frequency.toFixed(2)}x <span style="color:var(--t3);font-weight:400">· ${fmt(c.reach)} alcance</span></span></div><div class="cpl-bg"><div class="cpl-bar" style="width:${pct}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+function renderFreqInsight(k,data) {
+  const el=document.getElementById(k+'-insight'); if(!el) return;
+  const wl=data.campaigns.filter(c=>c.frequency!=null&&c.reach>0);
+  if(!wl.length){el.innerHTML='<div class="insight">Sem alcance registrado neste período</div>';return;}
+  const highestFreq=[...wl].sort((a,b)=>b.frequency-a.frequency)[0];
+  const bestReach=[...wl].sort((a,b)=>b.reach-a.reach)[0];
+  let html='';
+  if(highestFreq){
+    const s=highestFreq.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);
+    const cls=highestFreq.frequency>=5?'r':highestFreq.frequency>=3.5?'o':'';
+    const risk=highestFreq.frequency>=3.5?' — risco de saturação, considerar novos criativos':'';
+    html+=`<div class="insight ${cls}"><strong>${s}</strong> — maior frequência: ${highestFreq.frequency.toFixed(2)}x${risk}</div>`;
+  }
+  if(bestReach&&bestReach!==highestFreq){
+    const s=bestReach.name.replace(/\[.*?\]\s*/g,'').trim().substring(0,40);
+    html+=`<div class="insight" style="margin-top:8px"><strong>${s}</strong> — maior alcance: ${fmt(bestReach.reach)} pessoas</div>`;
+  }
+  if(!html) html='<div class="insight">Sem campanhas com alcance neste período</div>';
   el.innerHTML=html;
 }
 
@@ -1189,16 +1344,24 @@ function renderMetas(pace, totalDays, isMonth) {
     const cEl=document.getElementById(`pm-${k}-cpct`);
     if(cEl&&data.cpl){cEl.textContent=fmtPct(pctDiff(data.cpl,m.cpl));cEl.className='badge '+cplBadge(data.cpl,m.cpl);}
 
+    const hasLeadsGoal = key !== 'assess'; // Ago/26: Assessoria não tem mais meta de leads/CPL
+
     if (isMonth) {
-      const pl=Math.round(m.leads*pace), ps=Math.round(m.spend*pace);
-      document.getElementById(`pm-${k}-lpace`).textContent='pace: '+pl+' leads';
+      const ps=Math.round(m.spend*pace);
+      const lpEl=document.getElementById(`pm-${k}-lpace`); if(lpEl&&hasLeadsGoal){const pl=Math.round(m.leads*pace);lpEl.textContent='pace: '+pl+' leads';}
       document.getElementById(`pm-${k}-space`).textContent='pace: '+fmtR(ps);
-      const lEl=document.getElementById(`pm-${k}-lpct`); if(lEl){const d=pl>0?pctDiff(data.leads,pl):0;lEl.textContent=fmtPct(d);lEl.className='badge '+(d>=0?'bg':'br');}
+      const lEl=document.getElementById(`pm-${k}-lpct`); if(lEl&&hasLeadsGoal){const pl=Math.round(m.leads*pace);const d=pl>0?pctDiff(data.leads,pl):0;lEl.textContent=fmtPct(d);lEl.className='badge '+(d>=0?'bg':'br');}
       const sEl=document.getElementById(`pm-${k}-spct`); if(sEl){const d=ps>0?pctDiff(data.spend,ps):0;sEl.textContent=fmtPct(d);sEl.className='badge '+(d<=5?'bg':'br');}
-      const proj=pace>0?Math.round(data.leads/pace):0;
-      document.getElementById(`proj-${k}`).textContent='≈'+fmt(proj);
+      const projEl=document.getElementById(`proj-${k}`);
       const pd=document.getElementById(`proj-${k}-badge`);
-      if(pd){const dd=pctDiff(proj,m.leads);pd.innerHTML=`<span class="badge ${dd>=0?'bg':'br'}">${fmtPct(dd)} da meta</span>`;}
+      if (hasLeadsGoal) {
+        const proj=pace>0?Math.round(data.leads/pace):0;
+        projEl.textContent='≈'+fmt(proj);
+        if(pd){const dd=pctDiff(proj,m.leads);pd.innerHTML=`<span class="badge ${dd>=0?'bg':'br'}">${fmtPct(dd)} da meta</span>`;}
+      } else {
+        projEl.textContent='—';
+        if(pd) pd.innerHTML='<span class="badge bn">sem meta de leads</span>';
+      }
     } else {
       ['lpace','space'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e)e.textContent='';});
       ['lpct','spct'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e){e.textContent='';e.className='badge bn';}});
@@ -1280,7 +1443,10 @@ async function loadMetaDiaria() {
 function renderMetaDiariaBlock(k,key,canvasId) {
   const days = state.daily[key];
   if (!days) return;
-  const target = dailyTarget(key);
+  // Ago/26: Assessoria não tem mais meta de leads/dia — mostra só a série
+  // real, sem linha de meta nem coloração vs. threshold.
+  const hasTarget = key !== 'assess';
+  const target = hasTarget ? dailyTarget(key) : null;
   const GREEN='#16A34A', RED='#DC2626', MUTED='#9999BB';
   const accentMap={ g:'#7B3FE4', e:'#D4550A', a:'#00A389' };
   const accent = accentMap[k];
@@ -1288,34 +1454,43 @@ function renderMetaDiariaBlock(k,key,canvasId) {
   const labels = days.map(d=>pad(d.date.getDate())+'/'+pad(d.date.getMonth()+1));
   const real = days.map(d=>d.leads);
   const totalReal = real.reduce((s,v)=>s+v,0);
-  const totalTarget = target*days.length;
-  const pct = totalTarget>0 ? (totalReal/totalTarget*100) : 0;
 
-  document.getElementById('md-'+k+'-target').textContent = target.toFixed(1);
-  document.getElementById('md-'+k+'-real').textContent = fmt(totalReal);
-  document.getElementById('md-'+k+'-meta').textContent = fmt(totalTarget);
-  const pctEl = document.getElementById('md-'+k+'-pct');
-  pctEl.textContent = pct.toFixed(0)+'%';
-  pctEl.style.color = pct>=100 ? GREEN : RED;
+  const realEl=document.getElementById('md-'+k+'-real'); if(realEl) realEl.textContent = fmt(totalReal);
+  if (hasTarget) {
+    const totalTarget = target*days.length;
+    const pct = totalTarget>0 ? (totalReal/totalTarget*100) : 0;
+    document.getElementById('md-'+k+'-meta').textContent = fmt(totalTarget);
+    const pctEl = document.getElementById('md-'+k+'-pct');
+    pctEl.textContent = pct.toFixed(0)+'%';
+    pctEl.style.color = pct>=100 ? GREEN : RED;
+  } else {
+    const metaEl=document.getElementById('md-'+k+'-meta'); if(metaEl) metaEl.textContent = '—';
+    const pctEl = document.getElementById('md-'+k+'-pct');
+    if(pctEl){ pctEl.textContent = 'sem meta'; pctEl.style.color = 'var(--t3)'; }
+  }
 
   if (dailyCharts[k]) dailyCharts[k].destroy();
   const ctx = document.getElementById(canvasId);
+  const datasets = hasTarget ? [
+    { label:'Meta', data: labels.map(()=>target), borderColor:MUTED, borderDash:[6,4], borderWidth:1.5, pointRadius:3, pointBackgroundColor:MUTED, pointBorderWidth:0, fill:false, order:2 },
+    { label:'Real', data: real, borderWidth:2, borderColor:accent,
+      pointRadius:5,
+      pointBackgroundColor: real.map(v=>v>=target?GREEN:RED),
+      pointBorderColor:'#fff', pointBorderWidth:2,
+      segment: { borderColor:(c)=> (c.p0.parsed.y>=target && c.p1.parsed.y>=target) ? GREEN : (c.p0.parsed.y<target && c.p1.parsed.y<target) ? RED : MUTED },
+      fill: { target:0, above:'rgba(22,163,74,.14)', below:'rgba(220,38,38,.14)' },
+      order: 1
+    }
+  ] : [
+    { label:'Real', data: real, borderWidth:2, borderColor:accent,
+      pointRadius:5, pointBackgroundColor:accent, pointBorderColor:'#fff', pointBorderWidth:2,
+      fill: { target:'origin', above:'rgba(0,163,137,.10)' },
+      order: 1
+    }
+  ];
   dailyCharts[k] = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label:'Meta', data: labels.map(()=>target), borderColor:MUTED, borderDash:[6,4], borderWidth:1.5, pointRadius:3, pointBackgroundColor:MUTED, pointBorderWidth:0, fill:false, order:2 },
-        { label:'Real', data: real, borderWidth:2, borderColor:accent,
-          pointRadius:5,
-          pointBackgroundColor: real.map(v=>v>=target?GREEN:RED),
-          pointBorderColor:'#fff', pointBorderWidth:2,
-          segment: { borderColor:(c)=> (c.p0.parsed.y>=target && c.p1.parsed.y>=target) ? GREEN : (c.p0.parsed.y<target && c.p1.parsed.y<target) ? RED : MUTED },
-          fill: { target:0, above:'rgba(22,163,74,.14)', below:'rgba(220,38,38,.14)' },
-          order: 1
-        }
-      ]
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -1325,6 +1500,7 @@ function renderMetaDiariaBlock(k,key,canvasId) {
           callbacks: {
             label: (c) => {
               if (c.dataset.label==='Meta') return 'Meta: '+target.toFixed(1);
+              if (!hasTarget) return 'Leads: '+c.parsed.y;
               const d = c.parsed.y - target;
               const sign = d>=0 ? '+' : '';
               return 'Real: '+c.parsed.y+' ('+sign+d.toFixed(1)+' vs meta)';
@@ -1430,7 +1606,7 @@ async function loadStrategy(k, key) {
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
 function goTab(id,btn) {
-  ['visao','metas','campanhas','metadiaria','insights','estrategia','calculadora'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
+  ['visao','reconhecimento','metas','campanhas','metadiaria','insights','estrategia','calculadora'].forEach(t=>{ document.getElementById(t).style.display=t===id?'block':'none'; });
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   if (id==='metadiaria') loadMetaDiaria();
