@@ -804,6 +804,8 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <div class="pf-field"><label for="pfCalcCPL">Custo por lead (CPL)</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfCalcCPL" value="20" min="0.01" step="0.5"></div></div>
     <div class="pf-field"><label for="pfCalcQualif">Taxa de qualificação</label><div class="pf-input-wrap"><input type="number" id="pfCalcQualif" value="40" min="0" max="100" step="0.5"><span>%</span></div></div>
     <div class="pf-field"><label for="pfCalcFechamento">Taxa de fechamento</label><div class="pf-input-wrap"><input type="number" id="pfCalcFechamento" value="25" min="0" max="100" step="0.5"><span>%</span></div></div>
+    <div class="pf-field"><label for="pfCalcMeta">Meta de vendas</label><div class="pf-input-wrap"><input type="number" id="pfCalcMeta" value="33" min="0" step="1"><span>vendas</span></div></div>
+    <div class="pf-field"><label for="pfCalcTicket">Ticket médio</label><div class="pf-input-wrap"><span>R$</span><input type="number" id="pfCalcTicket" value="0" min="0" step="10"></div></div>
   </div>
 
   <div class="kpi n" style="margin-top:16px;margin-bottom:4px">
@@ -816,7 +818,8 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     <div class="kpi o"><div class="kpi-l">Leads gerados</div><div class="kpi-v" id="pfCalcLeads">250</div><div class="kpi-s">Budget ÷ CPL</div></div>
     <div class="kpi o"><div class="kpi-l">Leads qualificados</div><div class="kpi-v" id="pfCalcQualificados">100</div><div class="kpi-s">Leads × qualificação</div></div>
     <div class="kpi o"><div class="kpi-l">Vendas estimadas</div><div class="kpi-v" id="pfCalcVendas">25</div><div class="kpi-s">Qualificados × fechamento</div></div>
-    <div class="kpi r"><div class="kpi-l">Vs. meta de 33</div><div class="kpi-v" id="pfCalcGap">−8</div><div class="kpi-s" id="pfCalcGapFoot">abaixo da meta</div></div>
+    <div class="kpi r"><div class="kpi-l" id="pfCalcGapLabel">Vs. meta de 33</div><div class="kpi-v" id="pfCalcGap">−8</div><div class="kpi-s" id="pfCalcGapFoot">abaixo da meta</div></div>
+    <div class="kpi g"><div class="kpi-l">Faturamento previsto</div><div class="kpi-v" id="pfCalcFaturamento">R$0</div><div class="kpi-s">Vendas estimadas × ticket médio</div></div>
   </div>
 
   <div class="pf-callout" id="pfCalcCallout" style="margin-top:20px">
@@ -1924,35 +1927,44 @@ scheduleEndOfDayRefresh();
     const pfCalcCPL = document.getElementById('pfCalcCPL');
     const pfCalcQualif = document.getElementById('pfCalcQualif');
     const pfCalcFechamento = document.getElementById('pfCalcFechamento');
+    const pfCalcMeta = document.getElementById('pfCalcMeta');
+    const pfCalcTicket = document.getElementById('pfCalcTicket');
     const pfCalcConvTotal = document.getElementById('pfCalcConvTotal');
     const pfCalcLeads = document.getElementById('pfCalcLeads');
     const pfCalcQualificados = document.getElementById('pfCalcQualificados');
     const pfCalcVendas = document.getElementById('pfCalcVendas');
+    const pfCalcGapLabel = document.getElementById('pfCalcGapLabel');
     const pfCalcGap = document.getElementById('pfCalcGap');
     const pfCalcGapFoot = document.getElementById('pfCalcGapFoot');
+    const pfCalcFaturamento = document.getElementById('pfCalcFaturamento');
     const pfCalcCallout = document.getElementById('pfCalcCallout');
     const pfCalcCalloutText = document.getElementById('pfCalcCalloutText');
-    const META = 33;
 
     function fmtInt(n) { return Math.round(n).toLocaleString('pt-BR'); }
     function fmtPct(n) { return n.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%'; }
+    function fmtR(n) { return 'R$' + Math.round(n).toLocaleString('pt-BR'); }
 
     function pfUpdateCalc() {
       const budget = parseFloat(pfCalcBudget.value) || 0;
       const cpl = parseFloat(pfCalcCPL.value) || 0;
       const qualif = parseFloat(pfCalcQualif.value) || 0;
       const fechamento = parseFloat(pfCalcFechamento.value) || 0;
+      const meta = parseFloat(pfCalcMeta.value) || 0;
+      const ticket = parseFloat(pfCalcTicket.value) || 0;
 
       const convTotal = (qualif / 100) * (fechamento / 100) * 100;
       const leads = cpl > 0 ? budget / cpl : 0;
       const qualificados = leads * (qualif / 100);
       const vendas = qualificados * (fechamento / 100);
-      const gap = vendas - META;
+      const gap = vendas - meta;
+      const faturamento = vendas * ticket;
 
       pfCalcConvTotal.textContent = fmtPct(convTotal);
       pfCalcLeads.textContent = fmtInt(leads);
       pfCalcQualificados.textContent = fmtInt(qualificados);
       pfCalcVendas.textContent = fmtInt(vendas);
+      pfCalcGapLabel.textContent = 'Vs. meta de ' + fmtInt(meta);
+      pfCalcFaturamento.textContent = fmtR(faturamento);
 
       pfCalcVendas.classList.remove('green', 'red');
       pfCalcGap.classList.remove('green', 'red');
@@ -1964,16 +1976,16 @@ scheduleEndOfDayRefresh();
         pfCalcVendas.classList.add('green');
         pfCalcGapFoot.textContent = 'acima ou na meta';
         pfCalcCallout.classList.add('good');
-        pfCalcCalloutText.innerHTML = 'Nesse cenário, a meta de 33 ingressos é <b>atingida</b> — sobra de ' + fmtInt(gap) + ' venda(s).';
+        pfCalcCalloutText.innerHTML = 'Nesse cenário, a meta de ' + fmtInt(meta) + ' ingressos é <b>atingida</b> — sobra de ' + fmtInt(gap) + ' venda(s), com faturamento previsto de <b>' + fmtR(faturamento) + '</b>.';
       } else {
         pfCalcGap.textContent = fmtInt(gap);
         pfCalcGap.classList.add('red');
         pfCalcVendas.classList.add('red');
         pfCalcGapFoot.textContent = 'abaixo da meta';
-        pfCalcCalloutText.innerHTML = 'Nesse cenário, o resultado fica <b>' + fmtInt(Math.abs(gap)) + ' ingresso(s)</b> abaixo da meta de 33.';
+        pfCalcCalloutText.innerHTML = 'Nesse cenário, o resultado fica <b>' + fmtInt(Math.abs(gap)) + ' ingresso(s)</b> abaixo da meta de ' + fmtInt(meta) + ', com faturamento previsto de <b>' + fmtR(faturamento) + '</b>.';
       }
     }
-    [pfCalcBudget, pfCalcCPL, pfCalcQualif, pfCalcFechamento].forEach(function (input) { input.addEventListener('input', pfUpdateCalc); });
+    [pfCalcBudget, pfCalcCPL, pfCalcQualif, pfCalcFechamento, pfCalcMeta, pfCalcTicket].forEach(function (input) { input.addEventListener('input', pfUpdateCalc); });
     pfUpdateCalc();
   })();
 })();
