@@ -595,6 +595,35 @@ footer{text-align:center;font-size:11px;color:var(--t3);padding-top:18px;border-
     </tbody>
   </table>
 </div>
+<div id="investPaceSection">
+  <div class="stitle mb28">Pace de Investimento Mensal</div>
+  <div class="co-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="co-card goalfy"><div class="co-glow"></div>
+      <div class="co-name">Goalfy</div>
+      <div class="co-invest"><span id="ip-g-spend">—</span></div>
+      <div class="co-invest-l" id="ip-g-budget">meta R$10.000/mês</div>
+      <div class="co-bar"><div class="co-bar-fill" id="ip-g-bar" style="width:0%"></div></div>
+      <div class="co-stats"><div id="ip-g-expected">pace esperado: —</div><span class="badge bn" id="ip-g-badge">—</span></div>
+      <div style="font-size:11px;color:var(--t3);margin-top:10px">Projeção de fechamento: <strong id="ip-g-proj" style="color:var(--tx)">—</strong></div>
+    </div>
+    <div class="co-card educ"><div class="co-glow"></div>
+      <div class="co-name">Hapo Educação</div>
+      <div class="co-invest"><span id="ip-e-spend">—</span></div>
+      <div class="co-invest-l" id="ip-e-budget">meta R$5.000/mês</div>
+      <div class="co-bar"><div class="co-bar-fill" id="ip-e-bar" style="width:0%"></div></div>
+      <div class="co-stats"><div id="ip-e-expected">pace esperado: —</div><span class="badge bn" id="ip-e-badge">—</span></div>
+      <div style="font-size:11px;color:var(--t3);margin-top:10px">Projeção de fechamento: <strong id="ip-e-proj" style="color:var(--tx)">—</strong></div>
+    </div>
+    <div class="co-card assess"><div class="co-glow"></div>
+      <div class="co-name">Hapo Assessoria</div>
+      <div class="co-invest"><span id="ip-a-spend">—</span></div>
+      <div class="co-invest-l" id="ip-a-budget">meta R$3.000/mês</div>
+      <div class="co-bar"><div class="co-bar-fill" id="ip-a-bar" style="width:0%"></div></div>
+      <div class="co-stats"><div id="ip-a-expected">pace esperado: —</div><span class="badge bn" id="ip-a-badge">—</span></div>
+      <div style="font-size:11px;color:var(--t3);margin-top:10px">Projeção de fechamento: <strong id="ip-a-proj" style="color:var(--tx)">—</strong></div>
+    </div>
+  </div>
+</div>
 <div id="projSection">
   <div class="stitle mb28">Projeção de fechamento</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
@@ -1322,6 +1351,7 @@ function renderMetas(pace, totalDays, isMonth) {
   document.getElementById('paceAlertBox').style.display = isMonth?'flex':'none';
   document.getElementById('nonMonthNotice').style.display = isMonth?'none':'flex';
   document.getElementById('projSection').style.display = isMonth?'block':'none';
+  document.getElementById('investPaceSection').style.display = isMonth?'block':'none';
 
   if (isMonth) {
     document.getElementById('paceLabel').textContent='Pace '+(pace*100).toFixed(1)+'%';
@@ -1362,6 +1392,27 @@ function renderMetas(pace, totalDays, isMonth) {
         projEl.textContent='—';
         if(pd) pd.innerHTML='<span class="badge bn">sem meta de leads</span>';
       }
+
+      // Pace de investimento mensal (card dedicado)
+      const budget=m.spend;
+      const barPct=Math.min(100,(data.spend/budget)*100);
+      const spendDiff=ps>0?pctDiff(data.spend,ps):0;
+      const projSpend=pace>0?data.spend/pace:0;
+      const projDiff=pctDiff(projSpend,budget);
+      let paceTxt, paceCls;
+      if(spendDiff>5){paceTxt='acima do pace';paceCls='br';}
+      else if(spendDiff<-5){paceTxt='abaixo do pace';paceCls='bg';}
+      else{paceTxt='dentro do pace';paceCls='bg';}
+      document.getElementById(`ip-${k}-spend`).textContent=fmtR(data.spend);
+      document.getElementById(`ip-${k}-budget`).textContent=`meta ${fmtR(budget)}/mês`;
+      document.getElementById(`ip-${k}-bar`).style.width=barPct+'%';
+      document.getElementById(`ip-${k}-expected`).textContent=`pace esperado: ${fmtR(ps)} (dia ${todayDay}/${totalDays})`;
+      const bEl=document.getElementById(`ip-${k}-badge`);
+      bEl.textContent=`${paceTxt} (${fmtPct(spendDiff)})`;
+      bEl.className='badge '+paceCls;
+      const projEl2=document.getElementById(`ip-${k}-proj`);
+      projEl2.textContent=fmtR(projSpend)+(projDiff>10?' ⚠ acima da meta':'');
+      projEl2.style.color=projDiff>10?'var(--red)':'var(--tx)';
     } else {
       ['lpace','space'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e)e.textContent='';});
       ['lpct','spct'].forEach(id=>{const e=document.getElementById(`pm-${k}-${id}`);if(e){e.textContent='';e.className='badge bn';}});
